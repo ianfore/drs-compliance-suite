@@ -1,0 +1,38 @@
+{
+  "interactions": [
+    {
+      "request": {
+        "method": "GET",
+        "uri": "http://localhost:5000/ga4gh/drs/v1/service-info"
+      },
+      "response": {
+        "body": {
+          "id":"drs.starterkit.federatedgenomics.org",
+          "name":"Federated Genomics DRS service",
+          "description":"Data Repository Service (DRS) instance serving public genomics datasets. Deployment of the GA4GH Starter Kit.",
+          "contactUrl":"mailto:nobody@federatedgenomics.org",
+          "documentationUrl":"https://apidocs.federatedgenomics.org/drs",
+          "createdAt":"2022-07-10T09:00:00Z",
+          "updatedAt":"2022-07-10T09:00:00Z",
+          "environment":"development",
+          "version":"1.0.0",
+          "type":{
+            "group":"org.ga4gh",
+            "artifact":"drs",
+            "version":"1.1.0"
+          },
+          "organization":{
+            "name":"Federated Genomics",
+            "url":"https://this-is-not-a-site.federatedgenomics.org"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": {
+          "code": 200
+        }
+      }
+    }
+  ]
+}
