@@ -2,7 +2,7 @@ from flask import Flask, request, Response
 import json
 import os
 import re
-from unittests.constants import GOOD_SERVER_URL
+from constants import GOOD_SERVER_URL
 
 good_server_host = GOOD_SERVER_URL.split("://")[1].split(":")[0]
 good_server_port = GOOD_SERVER_URL.split("://")[1].split(":")[1].replace("/","")
