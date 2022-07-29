@@ -1,6 +1,10 @@
 {
+  "phase_name": "phase_service_info_endpoint",
+  "phase_description": "run all the tests for service_info endpoint",
   "interactions": [
     {
+      "test_name": "test_GET_service_info_success",
+      "test_description": "success case of GET service-info",
       "request": {
         "method": "GET",
         "uri": "http://localhost:5000/ga4gh/drs/v1/service-info"

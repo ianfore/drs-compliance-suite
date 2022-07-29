@@ -1,32 +1,87 @@
-# get the command line args -> drs server url
-# run tests -> service_info.py
-# get the output of service_info in the test phase format defined in testbed-lib
-# return as json on std out
-from helper import Parser, Logger
+from datetime import datetime
 
-args = Parser.parse_args()
-server_base_url = args.server_base_url
-severity = args.log_level
-print("server:" + server_base_url)
-print("log level:" + severity)
+class Report():
+    def __init__(
+            self,
+            schema_name,
+            schema_version,
+            testbed_name,
+            testbed_version,
+            testbed_description,
+            platform_name,
+            platform_description,
+            input_parameters
+    ):
+        self.schema_name = schema_name # "ga4gh-testbed-report"
+        self.schema_version = schema_version # "0.1.0"
+        self.testbed_name = testbed_name
+        self.testbed_version = testbed_version
+        self.testbed_description = testbed_description
+        self.platform_name = platform_name
+        self.platform_description = platform_description
+        self.input_parameters = input_parameters # or update with input params?
+        self.start_time = ""
+        self.end_time = ""
+        self.status = ""
+        self.summary = {
+            "unknown": 0,
+            "passed":0,
+            "warned":0,
+            "failed":0,
+            "skipped":0
+        }
+        self.message = ""
+        self.phases = []
 
-logger = Logger.get_logger("WARN", "./logs/test.log", "dev")
+class Phase():
+    def __init__(self, phase_name, phase_description):
+        self.phase_name = phase_name
+        self.phase_description = phase_description
+        self.start_time = ""
+        self.end_time = ""
+        self.status = ""
+        self.summary = {
+            "unknown": 0,
+            "passed":0,
+            "warned":0,
+            "failed":0,
+            "skipped":0
+        }
+        self.tests = []
 
-logger.warning("WARN Testing!!!!!!",except_msg="test")
-logger.info("INFO Testing!!!!!!",except_msg="test")
-logger.debug("DEBUG Testing!!!!!!",except_msg="test")
-logger.error("ERROR Testing!!!!!!",except_msg="test")
+class TestbedTest():
+    def __init__(self, test_name, test_description):
+        self.test_name = test_name
+        self.test_description = test_description
+        self.start_time = ""
+        self.end_time = ""
+        self.status = ""
+        self.summary = {
+            "unknown": 0,
+            "passed":0,
+            "warned":0,
+            "failed":0,
+            "skipped":0
+        }
+        self.message = ""
+        self.cases = []
 
+class Case():
+    # TODO: Add skip field, when skip is set, the case is not applicable for a given test interaction and will be skipped
+    def __init__(self, case_name, case_description, algorithm, actual_response, expected_response):
+        self.case_name = case_name
+        self.case_description = case_description
+        self.start_time = ""
+        self.end_time = ""
+        self.status = ""
+        self.log_message = []
+        self.message = ""
+        self.algorithm = algorithm
+        self.actual_response = actual_response
+        self.expected_response = expected_response
+        self.run_case()
 
-
-# TODO - plan
-# for each endpoint, have a yml/json config kind of file that lists all the test cases -> endpoint name, inputs, headers,output
-# json config use cases file structure
-#   {
-#   http_method: "",
-#   endpoint:"",
-#   url params:{"id":"","x":"","y":""},
-#  headers:[],
-# request_body:""
-# }
-# for each usecase - run requests.get(usecase) -> compare output is as expected
+    def run_case(self):
+        self.start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
+        self.algorithm(self)
+        self.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
