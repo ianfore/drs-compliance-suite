@@ -6,18 +6,28 @@ import json
 import requests
 from generate_json import generate_report_json
 from datetime import datetime
+from helper import Parser, Logger
+import os
 
 if __name__=="__main__":
 
-    #  TODO: input_parameters, platform name, description from args
+    args = Parser.parse_args()
+    server_base_url = args.server_base_url
+    platform_name = args.platform_name
+    platform_description = args.platform_description
+
+    # server_base_url = http://localhost:5000/ga4gh/drs/v1
+    # platform_name = "ga4gh starter kit drs",
+    # platform_description = "GA4GH reference implementation of DRS specification",
+
     report_object = Report(
         schema_name = "ga4gh-testbed-report",
         schema_version = "0.1.0",
         testbed_name = "DRS Compliance Suite",
         testbed_version = "v0.0.0",
         testbed_description = "Test the compliance of a DRS implementation with GA4GH DRS v1.2.0 specification",
-        platform_name = "ga4gh starter kit drs",
-        platform_description = "GA4GH reference implementation of DRS specification",
+        platform_name = platform_name,
+        platform_description = platform_description,
         input_parameters = {}
     )
     report_object.start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
@@ -32,7 +42,7 @@ if __name__=="__main__":
     for interaction in service_info_interactions["interactions"]:
         this_test_start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         request_http_method = interaction["request"]["method"]
-        request_uri = interaction["request"]["uri"]
+        request_uri = server_base_url + interaction["request"]["uri"]
         response = requests.request(request_http_method, request_uri)
         case_status_code = Case(
             case_name="status_code",
@@ -103,7 +113,7 @@ if __name__=="__main__":
     for interaction in drs_object_interactions["interactions"]:
         this_test_start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         request_http_method = interaction["request"]["method"]
-        request_uri = interaction["request"]["uri"]
+        request_uri = server_base_url + interaction["request"]["uri"]
         response = requests.request(request_http_method, request_uri)
 
         case_status_code = Case(
@@ -146,42 +156,13 @@ if __name__=="__main__":
 
     drs_object_phase.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     report_object.phases.append(drs_object_phase)
-
-    ### end of report
     report_object.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
-
     report_json = generate_report_json(report_object)
 
-    json_formatted_str = json.dumps(report_json, indent=2)
+    if not os.path.exists("./output"):
+        os.makedirs("./output")
 
-    print(json_formatted_str)
+    # write output report to file
 
-
-
-
-
-
-
-
-
-
-
-
-# get the command line args -> drs server url
-# run tests -> service_info.py
-# get the output of service_info in the test phase format defined in testbed-lib
-# return as json on std out
-# from helper import Parser, Logger
-
-# args = Parser.parse_args()
-# server_base_url = args.server_base_url
-# severity = args.log_level
-# print("server:" + server_base_url)
-# print("log level:" + severity)
-#
-# logger = Logger.get_logger("WARN", "./logs/test.log", "dev")
-#
-# logger.warning("WARN Testing!!!!!!",except_msg="test")
-# logger.info("INFO Testing!!!!!!",except_msg="test")
-# logger.debug("DEBUG Testing!!!!!!",except_msg="test")
-# logger.error("ERROR Testing!!!!!!",except_msg="test")
+    with open('./output/report_'+datetime.strftime(datetime.utcnow(), "%Y-%m-%d_%H-%M-%S")+'.json', 'w', encoding='utf-8') as f:
+        json.dump(report_json, f, ensure_ascii=False, indent=4)

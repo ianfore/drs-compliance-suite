@@ -10,7 +10,7 @@
       "request":
       {
         "method": "GET",
-        "uri": "http://localhost:5000/ga4gh/drs/v1/objects/8e18bfb64168994489bc9e7fda0acd4f"
+        "uri": "/objects/8e18bfb64168994489bc9e7fda0acd4f"
       },
       "response": {
         "body": {
@@ -63,7 +63,7 @@
       "test_description": "GET drs_object by object_id when object_id is not present in the database",
       "request": {
         "method": "GET",
-        "uri": "http://localhost:5000/ga4gh/drs/v1/objects/8e18bfb64168994489bc9e7fda0acd4g"
+        "uri": "/objects/8e18bfb64168994489bc9e7fda0acd4g"
       },
       "response": {
         "body": {

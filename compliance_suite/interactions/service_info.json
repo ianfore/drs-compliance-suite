@@ -7,7 +7,7 @@
       "test_description": "success case of GET service-info",
       "request": {
         "method": "GET",
-        "uri": "http://localhost:5000/ga4gh/drs/v1/service-info"
+        "uri": "/service-info"
       },
       "response": {
         "body": {
