@@ -2,6 +2,7 @@ from flask import Flask, request, Response
 import json
 import os
 import re
+import datetime
 from constants import GOOD_SERVER_URL
 from edit_data import *
 from collections.abc import Mapping
@@ -24,6 +25,7 @@ HTTP codes
 501:"Not Implemented"
 '''
 
+# Get service info
 @app.route('/sequence/service-info', methods=['GET'])
 def get_service_info():
     header_content = request.headers
@@ -54,8 +56,8 @@ def get_service_info():
 
     return Response(response=json.dumps(service_info_resp), status=200, mimetype=accept_type)
 
-# Get Object
-@app.route('/sequence/objects/<obj_id>', methods=['GET'])
+# GET Object or OPTS Endpoint
+@app.route('/sequence/objects/<obj_id>', methods=['GET', 'OPTIONS'])
 def get_object(obj_id):
     header_content = request.headers
     accept_type = "application/json"
@@ -66,10 +68,12 @@ def get_object(obj_id):
 
     drs_obj = get_drs_object(obj_id)
 
-    if not drs_obj:
-        # Object not found
+    time_stamp = datetime.datetime.utcnow().isoformat()
+    final_time_stamp = time_stamp[:time_stamp.find(".")] + "Z"
+
+    if not drs_obj: # Object not found
         error_obj = {
-            "timestamp": "2022-07-25T13:44:13Z",
+            "timestamp": final_time_stamp,
             "status_code": 404,
             "error": "Not Found",
             "msg": "No DrsObject found by id: " + obj_id
@@ -77,8 +81,46 @@ def get_object(obj_id):
 
         return Response(response=json.dumps(error_obj), status=404, mimetype=accept_type)
     else:
+        if request.method == 'GET':
+            return Response(response=json.dumps(drs_obj), status=200, mimetype=accept_type)
+        elif request.method == 'OPTIONS':
+            opts_obj = {
+                "supported_types": [
+                    "None"
+                ]
+            }
+
+            return Response(response=json.dumps(opts_obj), status=200, mimetype=accept_type)
+        
+
+# Get Access URL
+@app.route('/sequence/objects/<obj_id>/access/<access_url>', methods=['GET'])
+def get_access_url(obj_id, access_url):
+    header_content = request.headers
+    accept_type = "application/json"
+
+    # validate the accept header
+    if "accept" in header_content and header_content["accept"] not in [accept_type, "*/*"]:
+        return Response(status=406)
+
+    access_url = get_drs_access_url(obj_id, access_url)
+
+    time_stamp = datetime.datetime.utcnow().isoformat()
+    final_time_stamp = time_stamp[:time_stamp.find(".")] + "Z"
+
+    if not access_url:
+        # Object not found
+        error_obj = {
+            "timestamp": final_time_stamp,
+            "status_code": 404,
+            "error": "Not Found",
+            "msg": "invalid access_id/object_id"
+        }
+
+        return Response(response=json.dumps(error_obj), status=404, mimetype=accept_type)
+    else:
         # Object found
-        return Response(response=json.dumps(drs_obj), status=200, mimetype=accept_type)
+        return Response(response=json.dumps(access_url), status=200, mimetype=accept_type)
 
 # Add new object
 @app.route('/sequence/objects/', methods=['POST'])
@@ -92,6 +134,9 @@ def post_object():
 
     drs_obj = request.json
 
+    time_stamp = datetime.datetime.utcnow().isoformat()
+    final_time_stamp = time_stamp[:time_stamp.find(".")] + "Z"
+
     if not isinstance(drs_obj, Mapping): # Validate that it is a dictionary
         return Response(status=415)
     else:
@@ -99,7 +144,7 @@ def post_object():
         data = get_all_drs_objects()
         if drs_obj["id"] in data:
             error_obj = {
-                "timestamp": "2022-07-25T14:27:22Z",
+                "timestamp": final_time_stamp,
                 "status_code": 409,
                 "error": "Conflict",
                 "msg": "A(n) DrsObject already exists at id " + drs_obj["id"]

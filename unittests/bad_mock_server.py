@@ -42,7 +42,7 @@ def get_service_info():
         "environment": "test",
         "version": "0.3.1",
         # "type": {
-        #     "group": "org.ga4gh",
+        #     "group": "org.mock",
         #     "artifact": "drs",
         #     "version": "1.1.0"
         # },
@@ -54,3 +54,71 @@ def get_service_info():
 
     # bad mock server: status = 400 when success
     return Response(response=json.dumps(service_info_resp), status=400, mimetype=accept_type)
+
+# GET Object or OPTS Endpoint
+@app.route('/sequence/objects/<obj_id>', methods=['GET', 'OPTIONS'])
+def get_object(obj_id):
+    header_content = request.headers
+    accept_type = "application/json"
+
+    # validate the accept header
+    if "accept" in header_content and header_content["accept"] not in [accept_type, "*/*"]:
+        return Response(status=406)
+
+    drs_obj = get_drs_object(obj_id)
+
+    time_stamp = datetime.datetime.utcnow().isoformat()
+    final_time_stamp = time_stamp[:time_stamp.find(".")] + "Z"
+
+    if not drs_obj: # Object not found
+        error_obj = {
+            "timestamp": final_time_stamp,
+            "status_code": 404,
+            "error": "Not Found",
+            "msg": "No DrsObject found by id: " + obj_id
+        }
+
+        return Response(response=json.dumps(error_obj), status=200, mimetype=accept_type)
+    else:
+        if request.method == 'GET':
+            # WRONG Status
+            return Response(response=json.dumps(drs_obj), status=409, mimetype=accept_type)
+        elif request.method == 'OPTIONS':
+            # Returns empty obj for options
+            opts_obj = {}
+
+            return Response(response=json.dumps(opts_obj), status=200, mimetype=accept_type)
+        
+
+# Get Access URL
+@app.route('/sequence/objects/<obj_id>/access/<access_url>', methods=['GET'])
+def get_access_url(obj_id, access_url):
+    header_content = request.headers
+    accept_type = "application/json"
+
+    # validate the accept header
+    if "accept" in header_content and header_content["accept"] not in [accept_type, "*/*"]:
+        return Response(status=406)
+
+    access_url = get_drs_access_url(obj_id, access_url)
+
+    time_stamp = datetime.datetime.utcnow().isoformat()
+    final_time_stamp = time_stamp[:time_stamp.find(".")] + "Z"
+
+    if not access_url:
+        # Object not found
+
+        # WRONG Response
+        error_obj = {
+            "timestamp": final_time_stamp,
+            "status_code": 200,
+            "error": "Not Found",
+            "msg": "invalid access_id/object_id"
+        }
+
+        return Response(response=json.dumps(error_obj), status=200, mimetype=accept_type)
+    else:
+        # Object found
+
+        # WRONG Response
+        return Response(response=json.dumps(access_url), status=404, mimetype=accept_type)
