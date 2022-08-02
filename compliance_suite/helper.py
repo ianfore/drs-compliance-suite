@@ -119,11 +119,11 @@ class Parser:
                             type=str)
         parser.add_argument("--platform_name",
                             required=True,
-                            help="name of the platform hosting DRS server",
+                            help="name of the platform hosting the DRS server",
                             type=str)
         parser.add_argument("--platform_description",
                             required=True,
-                            help="description of the platform hosting DRS server",
+                            help="description of the platform hosting the DRS server",
                             type=str)
         parser.add_argument("--log_level",
                             required=False,
