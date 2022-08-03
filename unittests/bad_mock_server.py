@@ -22,7 +22,7 @@ HTTP codes
 501:"Not Implemented"
 '''
 
-@app.route('/sequence/service-info', methods=['GET'])
+@app.route('/ga4gh/drs/v1/service-info', methods=['GET'])
 def get_service_info():
     header_content = request.headers
     accept_type = "application/json"
@@ -56,7 +56,7 @@ def get_service_info():
     return Response(response=json.dumps(service_info_resp), status=400, mimetype=accept_type)
 
 # GET Object or OPTS Endpoint
-@app.route('/sequence/objects/<obj_id>', methods=['GET', 'OPTIONS'])
+@app.route('/ga4gh/drs/v1/objects/<obj_id>', methods=['GET', 'OPTIONS'])
 def get_object(obj_id):
     header_content = request.headers
     accept_type = "application/json"
@@ -91,7 +91,7 @@ def get_object(obj_id):
         
 
 # Get Access URL
-@app.route('/sequence/objects/<obj_id>/access/<access_url>', methods=['GET'])
+@app.route('/ga4gh/drs/v1/objects/<obj_id>/access/<access_url>', methods=['GET'])
 def get_access_url(obj_id, access_url):
     header_content = request.headers
     accept_type = "application/json"

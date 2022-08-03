@@ -26,7 +26,7 @@ HTTP codes
 '''
 
 # Get service info
-@app.route('/sequence/service-info', methods=['GET'])
+@app.route('/ga4gh/drs/v1/service-info', methods=['GET'])
 def get_service_info():
     header_content = request.headers
     accept_type = "application/json"
@@ -57,7 +57,7 @@ def get_service_info():
     return Response(response=json.dumps(service_info_resp), status=200, mimetype=accept_type)
 
 # GET Object or OPTS Endpoint
-@app.route('/sequence/objects/<obj_id>', methods=['GET', 'OPTIONS'])
+@app.route('/ga4gh/drs/v1/objects/<obj_id>', methods=['GET', 'OPTIONS'])
 def get_object(obj_id):
     header_content = request.headers
     accept_type = "application/json"
@@ -94,7 +94,7 @@ def get_object(obj_id):
         
 
 # Get Access URL
-@app.route('/sequence/objects/<obj_id>/access/<access_url>', methods=['GET'])
+@app.route('/ga4gh/drs/v1/objects/<obj_id>/access/<access_url>', methods=['GET'])
 def get_access_url(obj_id, access_url):
     header_content = request.headers
     accept_type = "application/json"
@@ -123,7 +123,7 @@ def get_access_url(obj_id, access_url):
         return Response(response=json.dumps(access_url), status=200, mimetype=accept_type)
 
 # Add new object
-@app.route('/sequence/objects/', methods=['POST'])
+@app.route('/ga4gh/drs/v1/objects/', methods=['POST'])
 def post_object():
     header_content = request.headers
     accept_type = "application/json"
