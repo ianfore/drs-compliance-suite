@@ -117,12 +117,19 @@ class Parser:
                             required=True,
                             help="DRS server base url",
                             type=str)
+        parser.add_argument("--platform_name",
+                            required=True,
+                            help="name of the platform hosting the DRS server",
+                            type=str)
+        parser.add_argument("--platform_description",
+                            required=True,
+                            help="description of the platform hosting the DRS server",
+                            type=str)
         parser.add_argument("--log_level",
                             required=False,
                             help="display logs at or above this level",
                             type=str,
                             choices=["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"],
                             default="INFO")
-        # TODO: add more as needed
         args = parser.parse_args()
         return (args)
