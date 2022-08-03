@@ -2,10 +2,10 @@ from flask import Flask, request, Response
 import json
 import os
 import re
-from constants import GOOD_SERVER_URL
+from constants import BAD_SERVER_URL
 
-good_server_host = GOOD_SERVER_URL.split("://")[1].split(":")[0]
-good_server_port = GOOD_SERVER_URL.split("://")[1].split(":")[1].replace("/","")
+bad_server_host = BAD_SERVER_URL.split("://")[1].split(":")[0]
+bad_server_port = BAD_SERVER_URL.split("://")[1].split(":")[1].replace("/","")
 
 app = Flask(__name__)
 
@@ -122,3 +122,6 @@ def get_access_url(obj_id, access_url):
 
         # WRONG Response
         return Response(response=json.dumps(access_url), status=404, mimetype=accept_type)
+
+if __name__=="__main__":
+    app.run(host="0.0.0.0",port=bad_server_port)
