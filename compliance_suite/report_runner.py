@@ -1,22 +1,15 @@
 from report import Report, Phase, TestbedTest, Case
 from cases.service_info import check_required_service_info_attr, check_required_service_info_type_attr, check_required_service_info_org_attr
 from cases.common import check_status_code, check_content_type
-from cases.drs_object import check_required_drs_object_info_attr
+from cases.drs_object import check_required_drs_object_info_attr, check_required_drs_object_info_checksums_attr
 import json
 import requests
 from generate_json import generate_report_json
 from datetime import datetime
-from helper import Parser, Logger
+from helper import Parser
 import os
 
-if __name__=="__main__":
-
-    args = Parser.parse_args()
-    server_base_url = args.server_base_url
-    platform_name = args.platform_name
-    platform_description = args.platform_description
-    auth_type = args.auth_type
-
+def report_runner(server_base_url, platform_name, platform_description, auth_type):
     # TODO: impelement bearer and passport, take the auth info from user
     if (auth_type == "no_auth"):
         auth = None
@@ -63,7 +56,11 @@ if __name__=="__main__":
             skip_case_message=skip_case_message
         )
 
-        # if status != 200, skip the rest of the tests
+        # if expected_status != 200, skip the rest of the tests
+        if interaction["response"]["status"]["code"]!=200:
+            skip_case = True
+            skip_case_message = "Skipping this case as status_code = {}"
+
         if case_status_code.status == "FAIL":
             skip_case = True
             skip_case_message = "Skipping this case as response status is not as expected"
@@ -150,7 +147,11 @@ if __name__=="__main__":
             skip_case_message=skip_case_message
         )
 
-        # if status != 200, skip the rest of the tests
+        # if expected_status != 200, skip the rest of the tests
+        if interaction["response"]["status"]["code"]!=200:
+            skip_case = True
+            skip_case_message = "Skipping this case as status_code = {}"
+
         if case_status_code.status == "FAIL":
             skip_case = True
             skip_case_message = "Skipping this case as response status is not as expected"
@@ -176,6 +177,16 @@ if __name__=="__main__":
             skip_case_message=skip_case_message
         )
 
+        case_required_drs_object_info_checksums_attr = Case(
+            case_name="required response checksums fields",
+            case_description="check if the response 'checksums' field contains all the required attributes",
+            algorithm=check_required_drs_object_info_checksums_attr,
+            actual_response=response,
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
+        )
+
         this_test_name = interaction["test_name"]
         this_test_description = interaction["test_description"]
         this_test_obj = TestbedTest(this_test_name,this_test_description)
@@ -183,7 +194,8 @@ if __name__=="__main__":
         this_test_obj.cases = [
             case_status_code,
             case_content_type,
-            case_required_drs_object_info_attr
+            case_required_drs_object_info_attr,
+            case_required_drs_object_info_checksums_attr
         ]
         this_test_obj.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         drs_object_phase.tests.append(this_test_obj)
@@ -193,11 +205,24 @@ if __name__=="__main__":
     report_object.phases.append(drs_object_phase)
     report_object.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     report_json = generate_report_json(report_object)
+    return report_json
+
+if __name__=="__main__":
+
+    args = Parser.parse_args()
+    server_base_url = args.server_base_url
+    platform_name = args.platform_name
+    platform_description = args.platform_description
+    auth_type = args.auth_type
+
+    output_report_file_path = "./output/report_"+datetime.strftime(datetime.utcnow(), "%Y-%m-%d_%H-%M-%S")+".json"
+
+    report_json = report_runner(server_base_url, platform_name, platform_description, auth_type);
 
     if not os.path.exists("./output"):
         os.makedirs("./output")
 
     # write output report to file
 
-    with open('./output/report_'+datetime.strftime(datetime.utcnow(), "%Y-%m-%d_%H-%M-%S")+'.json', 'w', encoding='utf-8') as f:
+    with open(output_report_file_path, 'w', encoding='utf-8') as f:
         json.dump(report_json, f, ensure_ascii=False, indent=4)
