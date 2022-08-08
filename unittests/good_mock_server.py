@@ -1,16 +1,42 @@
 from flask import Flask, request, Response
-import json
-import os
-import re
 import datetime
-from constants import GOOD_SERVER_URL
-from edit_data import *
+from edit_data import write_drs_object, get_all_drs_objects, get_drs_object, get_drs_access_url
 from collections.abc import Mapping
-
-good_server_host = GOOD_SERVER_URL.split("://")[1].split(":")[0]
-good_server_port = GOOD_SERVER_URL.split("://")[1].split(":")[1].replace("/","")
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
+from helper import parse_args
+import json
 
 app = Flask(__name__)
+args = parse_args()
+app.config["auth_type"] = args.auth_type
+users = {
+    "username": generate_password_hash("password")
+}
+auth = HTTPBasicAuth()
+
+def conditional_auth(dec, auth_config):
+    def decorator(func):
+        if auth_config == "no_auth":
+            # Return the function unchanged, not decorated.
+            return func
+        elif auth_config == "basic":
+            return dec(func)
+        elif auth_config == "bearer":
+            return dec(func) # TODO: fix
+
+        else:
+            return dec(func) #TODO: FAIL!!!
+    return decorator
+
+
+
+
+@auth.verify_password
+def verify_password(username, password):
+    if username in users and \
+            check_password_hash(users.get(username), password):
+        return username
 
 '''
 HTTP codes
@@ -27,6 +53,7 @@ HTTP codes
 
 # Get service info
 @app.route('/ga4gh/drs/v1/service-info', methods=['GET'])
+@conditional_auth(auth.login_required,app.config["auth_type"])
 def get_service_info():
     header_content = request.headers
     accept_type = "application/json"
@@ -58,6 +85,7 @@ def get_service_info():
 
 # GET Object or OPTS Endpoint
 @app.route('/ga4gh/drs/v1/objects/<obj_id>', methods=['GET', 'OPTIONS'])
+@conditional_auth(auth.login_required,app.config["auth_type"])
 def get_object(obj_id):
     header_content = request.headers
     accept_type = "application/json"
@@ -91,10 +119,10 @@ def get_object(obj_id):
             }
 
             return Response(response=json.dumps(opts_obj), status=200, mimetype=accept_type)
-        
 
 # Get Access URL
 @app.route('/ga4gh/drs/v1/objects/<obj_id>/access/<access_url>', methods=['GET'])
+@conditional_auth(auth.login_required,app.config["auth_type"])
 def get_access_url(obj_id, access_url):
     header_content = request.headers
     accept_type = "application/json"
@@ -124,6 +152,7 @@ def get_access_url(obj_id, access_url):
 
 # Add new object
 @app.route('/ga4gh/drs/v1/objects/', methods=['POST'])
+@conditional_auth(auth.login_required,app.config["auth_type"])
 def post_object():
     header_content = request.headers
     accept_type = "application/json"
@@ -153,7 +182,7 @@ def post_object():
 
         # Add the drs object to the database
         write_drs_object(drs_obj)
-        return Response(response=json.dumps(drs_obj), status=200, mimetype=accept_type) 
+        return Response(response=json.dumps(drs_obj), status=200, mimetype=accept_type)
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0",port=good_server_port)
+    app.run(host=args.app_host,port=args.app_port)
