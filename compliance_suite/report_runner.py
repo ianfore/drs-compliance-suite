@@ -59,7 +59,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         # if expected_status != 200, skip the rest of the tests
         if interaction["response"]["status"]["code"]!=200:
             skip_case = True
-            skip_case_message = "Skipping this case as status_code = {}"
+            skip_case_message = "Skipping this case as we are testing a failure condition. Expected response status_code = {}"
 
         if case_status_code.status == "FAIL":
             skip_case = True
@@ -150,7 +150,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         # if expected_status != 200, skip the rest of the tests
         if interaction["response"]["status"]["code"]!=200:
             skip_case = True
-            skip_case_message = "Skipping this case as status_code = {}"
+            skip_case_message = "Skipping this case as we are testing a failure condition. Expected response status_code = {}"
 
         if case_status_code.status == "FAIL":
             skip_case = True
