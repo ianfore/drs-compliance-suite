@@ -17,7 +17,11 @@ python compliance_suite/report_runner.py --server_base_url "http://localhost:500
 * **--server_base_url** : base url of the DRS implementation that is being tested by the compliance suite
 * **--platform_name** : name of the platform hosting the DRS server
 * **--platform_description** : description of the platform hosting the DRS server
-* **--auth_type** : type of authentication used in the DRS server implementation
+* **--auth_type** : type of authentication used in the DRS server implementation. It can be one of the following -
+  * "no_auth"
+  * "basic"
+  * "bearer"
+  * "passport"
 ## Running the good mock server
 ```
 python unittests/good_mock_server.py --auth_type "no_auth" --app_host "0.0.0.0" --app_port "8089"
