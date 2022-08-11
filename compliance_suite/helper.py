@@ -4,8 +4,6 @@ import logging.config
 from logging.handlers import RotatingFileHandler
 import socket
 import os
-import datetime
-import json
 import structlog
 import zipfile
 from zipfile import ZipFile
@@ -112,7 +110,7 @@ class Parser:
 		server_base_url : the server url of DRS implementation that will be tested for compliance with DRS Spec
 		"""
         parser = argparse.ArgumentParser(
-            description="script to access reference sequence metadata in ENA using GA4GH refget API")
+            description="script to access DRS objects using GA4GH DRS API")
         parser.add_argument("--server_base_url",
                             required=True,
                             help="DRS server base url",
@@ -131,5 +129,11 @@ class Parser:
                             type=str,
                             choices=["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"],
                             default="INFO")
+        parser.add_argument("--auth_type",
+                            required=False,
+                            help="type of authentication used in the DRS implementation",
+                            type=str,
+                            choices=["no_auth", "basic", "bearer", "passport"],
+                            default="no_auth")
         args = parser.parse_args()
         return (args)

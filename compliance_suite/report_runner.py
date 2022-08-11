@@ -15,11 +15,18 @@ if __name__=="__main__":
     server_base_url = args.server_base_url
     platform_name = args.platform_name
     platform_description = args.platform_description
+    auth_type = args.auth_type
 
-    # server_base_url = http://localhost:5000/ga4gh/drs/v1
-    # platform_name = "ga4gh starter kit drs",
-    # platform_description = "GA4GH reference implementation of DRS specification",
-
+    # TODO: impelement bearer and passport, take the auth info from user
+    if (auth_type == "no_auth"):
+        auth = None
+    elif (auth_type == "basic"):
+        # auth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
+        auth = ("username", "password");
+    elif (auth_type == "bearer"):
+        auth = ""
+    elif (auth_type == "passport"):
+        auth = ""
     report_object = Report(
         schema_name = "ga4gh-testbed-report",
         schema_version = "0.1.0",
@@ -43,30 +50,42 @@ if __name__=="__main__":
         this_test_start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         request_http_method = interaction["request"]["method"]
         request_uri = server_base_url + interaction["request"]["uri"]
-        response = requests.request(request_http_method, request_uri)
+        response = requests.request(method = request_http_method, url = request_uri, auth=auth)
+        skip_case = False
+        skip_case_message = ""
         case_status_code = Case(
             case_name="status_code",
             case_description="check if the service-info response is as expected",
             algorithm=check_status_code,
             actual_response=response,
-            expected_response= interaction["response"]
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
         )
+
+        # if status != 200, skip the rest of the tests
+        if case_status_code.status == "FAIL":
+            skip_case = True
+            skip_case_message = "Skipping this case as response status is not as expected"
 
         case_content_type = Case(
             case_name="content-type",
             case_description="check if the response Content-Type is as expected",
             algorithm=check_content_type,
             actual_response=response,
-            expected_response= interaction["response"]
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
         )
 
-        ## if case_status_code = = 200 then....., else.....
         case_required_service_info_attr = Case(
             case_name="required response fields",
             case_description="check if the response contains all the required attributes",
             algorithm=check_required_service_info_attr,
             actual_response=response,
-            expected_response= interaction["response"]
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
         )
 
         case_required_service_info_type_attr = Case(
@@ -74,7 +93,9 @@ if __name__=="__main__":
             case_description="check if the response 'type' field contains all the required attributes",
             algorithm=check_required_service_info_type_attr,
             actual_response=response,
-            expected_response= interaction["response"]
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
         )
 
         case_required_service_info_org_attr = Case(
@@ -82,7 +103,9 @@ if __name__=="__main__":
             case_description="check if the response 'type' field contains all the required attributes",
             algorithm=check_required_service_info_org_attr,
             actual_response=response,
-            expected_response= interaction["response"]
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
         )
 
         this_test_name = interaction["test_name"]
@@ -114,22 +137,32 @@ if __name__=="__main__":
         this_test_start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         request_http_method = interaction["request"]["method"]
         request_uri = server_base_url + interaction["request"]["uri"]
-        response = requests.request(request_http_method, request_uri)
-
+        response = requests.request(method = request_http_method, url = request_uri, auth=auth)
+        skip_case = False
+        skip_case_message = ""
         case_status_code = Case(
             case_name="status_code",
             case_description="check if the drs object info response is as expected",
             algorithm=check_status_code,
             actual_response=response,
-            expected_response= interaction["response"]
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
         )
+
+        # if status != 200, skip the rest of the tests
+        if case_status_code.status == "FAIL":
+            skip_case = True
+            skip_case_message = "Skipping this case as response status is not as expected"
 
         case_content_type = Case(
             case_name="content-type",
             case_description="check if the response Content-Type is as expected",
             algorithm=check_content_type,
             actual_response=response,
-            expected_response= interaction["response"]
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
         )
 
         ## if case_status_code = = 200 then....., else.....
@@ -138,7 +171,9 @@ if __name__=="__main__":
             case_description="check if the response contains all the required attributes",
             algorithm=check_required_drs_object_info_attr,
             actual_response=response,
-            expected_response= interaction["response"]
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
         )
 
         this_test_name = interaction["test_name"]

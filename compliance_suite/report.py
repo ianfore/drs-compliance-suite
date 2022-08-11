@@ -68,7 +68,7 @@ class TestbedTest():
 
 class Case():
     # TODO: Add skip field, when skip is set, the case is not applicable for a given test interaction and will be skipped
-    def __init__(self, case_name, case_description, algorithm, actual_response, expected_response):
+    def __init__(self, case_name, case_description, algorithm, actual_response, expected_response, skip_case = False, skip_case_message = ""):
         self.case_name = case_name
         self.case_description = case_description
         self.start_time = ""
@@ -79,9 +79,15 @@ class Case():
         self.algorithm = algorithm
         self.actual_response = actual_response
         self.expected_response = expected_response
+        self.skip_case = skip_case
+        self.skip_case_message = skip_case_message
         self.run_case()
 
     def run_case(self):
         self.start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
-        self.algorithm(self)
+        if (self.skip_case == False):
+            self.algorithm(self)
+        else:
+            self.status = "SKIP"
+            self.message = self.skip_case_message
         self.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")

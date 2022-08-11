@@ -1,6 +1,5 @@
 import json
 import os
-import pprint
 
 def write_drs_object(drs_object):
     obj_id = drs_object["id"]
@@ -26,7 +25,6 @@ def get_all_drs_objects():
 
     with open(path, 'r') as json_file:
         data = json.load(json_file)
-        # pprint.pprint(data)
 
     return data
 
@@ -39,10 +37,7 @@ def get_drs_object(drs_id):
         
         # Check if object exists
         if drs_id in data:
-            # pprint.pprint(data[drs_id])
             return data[drs_id]
-        # else:
-        #     return False
 
 def get_drs_access_url(drs_id, access_id):
     curr_dir = os.path.dirname(__file__) # returns drs-compliance-suite/unittests
