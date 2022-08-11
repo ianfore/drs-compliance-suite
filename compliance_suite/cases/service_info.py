@@ -44,4 +44,4 @@ def check_required_service_info_org_attr(case):
     else:
         case.status = "FAIL"
         # TODO: print response_json.keys() - service_type_attr
-        case.message.append = "Required attributes - {} are absent in the service info - organization response"
+        case.message = "Required attributes - {} are absent in the service info - organization response"

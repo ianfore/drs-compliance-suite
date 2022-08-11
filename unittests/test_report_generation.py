@@ -1,8 +1,8 @@
 import os
 import glob
 import json
-from resources.expected_responses import expected_good_mock_server_report
-from resources.expected_responses import expected_bad_mock_server_report
+from resources.expected_reports import expected_good_mock_server_report
+from resources.expected_reports import expected_bad_mock_server_report
 
 def test_good_mock_server_report():
     # Generate a good mock report
