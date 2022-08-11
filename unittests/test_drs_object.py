@@ -38,14 +38,13 @@ for i in range(len(expected_bad_drs_objects)):
     
 ###
 
-def test_drs_obj_unittest():
+def test_check_required_drs_object_info_attr_good_mock_case():
     check_required_drs_object_info_attr(good_mock_case)
-    if good_mock_case.status != "PASS":
-        return False
-    
+    assert good_mock_case.status == "PASS"
+
+def test_check_required_drs_object_info_attr_bad_mock_case():
     for bad_mock_case in bad_mock_cases:
         check_required_drs_object_info_attr(bad_mock_case)
         if bad_mock_case.status != "FAIL":
-            return False
-    
-    return True
+            assert False
+    assert True

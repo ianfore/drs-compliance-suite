@@ -59,40 +59,42 @@ for i in range(len(bad_examples)):
 
     bad_mock_cases.append(bad_mock_case)
 
-def test_status_code_unittest():
-    good_mock_case.status = "NOT TESTED"
+### STATUS CODE 
+
+def test_check_status_code_good_mock_case():
     check_status_code(good_mock_case)
-    if good_mock_case.status != "PASS":
-        return False
-    
+    assert good_mock_case.status == "PASS"
+
+def test_check_status_code_bad_mock_cases():
     # Has no status code
     check_status_code(bad_mock_cases[1])
     if bad_mock_cases[1].status != "FAIL":
-        return False
+        assert False
     
     # Has status code 404
     check_status_code(bad_mock_cases[3])
     if bad_mock_cases[3].status != "FAIL":
-        return False
+        assert False
     
-    return True
+    assert True
 
-def test_content_type_unittest():
-    good_mock_case.status = "NOT TESTED"
+### CONTENT TYPE
+
+def test_check_content_type_good_mock_case():
     check_content_type(good_mock_case)
-    if good_mock_case.status != "PASS":
-        return False
+    assert good_mock_case.status == "PASS"
 
+def test_check_content_type_bad_mock_cases():
     # Has no Content-Type
-    bad_mock_cases[0].status = "NOT TESTED"
     check_content_type(bad_mock_cases[0])
     if bad_mock_cases[0].status != "FAIL":
         return False
 
     # Has wrong Content-Type
-    bad_mock_cases[2].status = "NOT TESTED"
     check_content_type(bad_mock_cases[2])
     if bad_mock_cases[2].status != "FAIL":
         return False
     
     return True
+
+    

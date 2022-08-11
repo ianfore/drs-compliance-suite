@@ -1,5 +1,6 @@
 import os
 import sys
+import pytest
 
 # Append parent directory to import path to access methods under compliance_suite
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -33,23 +34,26 @@ bad_mock_case = MockCase(
 
 ###
 
-service_info_methods = [
-    check_required_service_info_attr, 
-    check_required_service_info_type_attr, 
-    check_required_service_info_org_attr
-]
+def test_service_info_attr_good_mock_case():
+    check_required_service_info_attr(good_mock_case)
+    assert good_mock_case.status == "PASS"
 
-mock_cases = [ 
-    { "case": good_mock_case, "expected_response": "PASS" },
-    { "case": bad_mock_case, "expected_response": "FAIL" }
-]
+def test_service_info_attr_bad_mock_case():
+    check_required_service_info_attr(bad_mock_case)
+    assert bad_mock_case.status == "FAIL"
 
-# Should this be named something else?
-def test_service_info_unittest():
-    for method in service_info_methods:
-        for mock_case in mock_cases:
-            method(mock_case["case"])
-            if mock_case["case"].status != mock_case["expected_response"]:
-                return False
+def test_service_info_type_attr_good_mock_case():
+    check_required_service_info_type_attr(good_mock_case)
+    assert good_mock_case.status == "PASS"
 
-    return True
+def test_service_info_type_attr_bad_mock_case():
+    check_required_service_info_type_attr(bad_mock_case)
+    assert bad_mock_case.status == "FAIL"
+
+def test_service_info_org_attr_good_mock_case():
+    check_required_service_info_org_attr(good_mock_case)
+    assert good_mock_case.status == "PASS"
+
+def test_service_info_org_attr_bad_mock_case():
+    check_required_service_info_org_attr(bad_mock_case)
+    assert bad_mock_case.status == "FAIL"
