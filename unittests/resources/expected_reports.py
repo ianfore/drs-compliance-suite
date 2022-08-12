@@ -78,7 +78,6 @@ expected_good_mock_server_report = {
                 {
                     "test_name": "test_GET_drs_object_info_success",
                     "test_description": "success case of GET drs_object by object_id",
-    
                     "message": "",
                     "case": [
                         {
@@ -86,29 +85,29 @@ expected_good_mock_server_report = {
                             "case_description": "check if the drs object info response is as expected",
                             "log_message": [],
                             "status": "FAIL",
-                            "message": "Response Status Code is as expected"
+                            "message": "Response Status Code is not as expected"
                         },
                         {
                             "case_name": "content-type",
                             "case_description": "check if the response Content-Type is as expected",
                             "log_message": [],
-                            "status": "PASS",
-                            "message": "Response header 'Content-Type' is as expected"
+                            "status": "SKIP",
+                            "message": "Skipping this case as response status is not as expected"
                         },
                         {
                             "case_name": "required response fields",
                             "case_description": "check if the response contains all the required attributes",
                             "log_message": [],
-                            "status": "FAIL",
-                            "message": "Required attributes - {} are absent in the drs object info response for object_id = {}"
+                            "status": "SKIP",
+                            "message": "Skipping this case as response status is not as expected"
                         }
                     ],
                     "summary": {
                         "unknown": 0,
-                        "passed": 1,
+                        "passed": 0,
                         "warned": 0,
-                        "failed": 2,
-                        "skipped": 0
+                        "failed": 1,
+                        "skipped": 2
                     },
                     "status": "FAIL"
                 },
@@ -151,20 +150,20 @@ expected_good_mock_server_report = {
             ],
             "summary": {
                 "unknown": 0,
-                "passed": 3,
+                "passed": 2,
                 "warned": 0,
-                "failed": 3,
-                "skipped": 0
+                "failed": 2,
+                "skipped": 2
             },
             "status": "FAIL"
         }
     ],
     "summary": {
         "unknown": 0,
-        "passed": 8,
+        "passed": 7,
         "warned": 0,
-        "failed": 3,
-        "skipped": 0
+        "failed": 2,
+        "skipped": 2
     },
     "status": "FAIL"
 }
@@ -192,53 +191,53 @@ expected_bad_mock_server_report = {
                             "case_description": "check if the service-info response is as expected",
                             "log_message": [],
                             "status": "FAIL",
-                            "message": "Response Status Code is as expected"
+                            "message": "Response Status Code is not as expected"
                         },
                         {
                             "case_name": "content-type",
                             "case_description": "check if the response Content-Type is as expected",
                             "log_message": [],
-                            "status": "PASS",
-                            "message": "Response header 'Content-Type' is as expected"
+                            "status": "SKIP",
+                            "message": "Skipping this case as response status is not as expected"
                         },
                         {
                             "case_name": "required response fields",
                             "case_description": "check if the response contains all the required attributes",
                             "log_message": [],
-                            "status": "FAIL",
-                            "message": "Required attributes - {} are absent in the service info response"
+                            "status": "SKIP",
+                            "message": "Skipping this case as response status is not as expected"
                         },
                         {
                             "case_name": "required response service type fields",
                             "case_description": "check if the response 'type' field contains all the required attributes",
                             "log_message": [],
-                            "status": "FAIL",
-                            "message": "Service info has no attribute 'type'"
+                            "status": "SKIP",
+                            "message": "Skipping this case as response status is not as expected"
                         },
                         {
                             "case_name": "required response service type fields",
                             "case_description": "check if the response 'type' field contains all the required attributes",
                             "log_message": [],
-                            "status": "PASS",
-                            "message": "Required attributes - {} are present in the service info - organization response"
+                            "status": "SKIP",
+                            "message": "Skipping this case as response status is not as expected"
                         }
                     ],
                     "summary": {
                         "unknown": 0,
-                        "passed": 2,
+                        "passed": 0,
                         "warned": 0,
-                        "failed": 3,
-                        "skipped": 0
+                        "failed": 1,
+                        "skipped": 4
                     },
                     "status": "FAIL"
                 }
             ],
             "summary": {
                 "unknown": 0,
-                "passed": 2,
+                "passed": 0,
                 "warned": 0,
-                "failed": 3,
-                "skipped": 0
+                "failed": 1,
+                "skipped": 4
             },
             "status": "FAIL"
         },
@@ -292,49 +291,49 @@ expected_bad_mock_server_report = {
                             "case_description": "check if the drs object info response is as expected",
                             "log_message": [],
                             "status": "FAIL",
-                            "message": "Response Status Code is as expected"
+                            "message": "Response Status Code is not as expected"
                         },
                         {
                             "case_name": "content-type",
                             "case_description": "check if the response Content-Type is as expected",
                             "log_message": [],
-                            "status": "PASS",
-                            "message": "Response header 'Content-Type' is as expected"
+                            "status": "SKIP",
+                            "message": "Skipping this case as response status is not as expected"
                         },
                         {
                             "case_name": "required response fields",
                             "case_description": "check if the response contains all the required attributes",
                             "log_message": [],
-                            "status": "FAIL",
-                            "message": "Required attributes - {} are absent in the drs object info response for object_id = {}"
+                            "status": "SKIP",
+                            "message": "Skipping this case as response status is not as expected"
                         }
                     ],
                     "summary": {
                         "unknown": 0,
-                        "passed": 1,
+                        "passed": 0,
                         "warned": 0,
-                        "failed": 2,
-                        "skipped": 0
+                        "failed": 1,
+                        "skipped": 2
                     },
                     "status": "FAIL"
                 }
             ],
             "summary": {
                 "unknown": 0,
-                "passed": 3,
+                "passed": 2,
                 "warned": 0,
-                "failed": 3,
-                "skipped": 0
+                "failed": 2,
+                "skipped": 2
             },
             "status": "FAIL"
         }
     ],
     "summary": {
         "unknown": 0,
-        "passed": 5,
+        "passed": 2,
         "warned": 0,
-        "failed": 6,
-        "skipped": 0
+        "failed": 3,
+        "skipped": 6
     },
     "status": "FAIL"
 }

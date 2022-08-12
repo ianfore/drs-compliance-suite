@@ -43,8 +43,10 @@ def test_check_required_drs_object_info_attr_good_mock_case():
     assert good_mock_case.status == "PASS"
 
 def test_check_required_drs_object_info_attr_bad_mock_case():
+    bad_mock_results = []
+
     for bad_mock_case in bad_mock_cases:
         check_required_drs_object_info_attr(bad_mock_case)
-        if bad_mock_case.status != "FAIL":
-            assert False
-    assert True
+        bad_mock_results.append(bad_mock_case.status == "FAIL")
+
+    assert all(bad_mock_results)

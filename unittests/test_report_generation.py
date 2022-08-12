@@ -24,7 +24,7 @@ def test_good_mock_server_report():
         good_mock_report = data
 
     good_mock_reference = expected_good_mock_server_report
-    return validate_json(good_mock_report, good_mock_reference)
+    assert validate_json(good_mock_report, good_mock_reference)
 
 def test_bad_mock_server_report():
     # Generate a bad mock report
@@ -46,7 +46,7 @@ def test_bad_mock_server_report():
         bad_mock_report = data
 
     bad_mock_reference = expected_bad_mock_server_report
-    return validate_json(bad_mock_report, bad_mock_reference)
+    assert validate_json(bad_mock_report, bad_mock_reference)
 
 def validate_json(big_json, small_json):
     '''
