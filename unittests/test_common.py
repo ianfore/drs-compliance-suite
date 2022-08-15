@@ -72,7 +72,8 @@ def test_check_status_code_bad_mock_cases():
     # Has status code 404
     check_status_code(bad_mock_cases[3])
 
-    assert bad_mock_cases[1].status == "FAIL" and bad_mock_cases[3].status == "FAIL"
+    assert bad_mock_cases[1].status == "FAIL"
+    assert bad_mock_cases[3].status == "FAIL"
 
 ### CONTENT TYPE
 
@@ -87,5 +88,6 @@ def test_check_content_type_bad_mock_cases():
     # Has wrong Content-Type
     check_content_type(bad_mock_cases[2])
 
-    assert bad_mock_cases[0].status == "FAIL" and bad_mock_cases[2].status == "FAIL"
+    assert bad_mock_cases[0].status == "FAIL" 
+    assert bad_mock_cases[2].status == "FAIL"
     
