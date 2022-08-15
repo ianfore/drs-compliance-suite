@@ -1,7 +1,8 @@
 from report import Report, Phase, TestbedTest, Case
 from cases.service_info import check_required_service_info_attr, check_required_service_info_type_attr, check_required_service_info_org_attr
 from cases.common import check_status_code, check_content_type
-from cases.drs_object import check_required_drs_object_info_attr, check_required_drs_object_info_checksums_attr
+from cases.drs_object import check_all_drs_object_info_attr, check_all_drs_object_info_attr_types, \
+    check_required_drs_object_info_attr, check_required_drs_object_info_checksums_attr
 import json
 import requests
 from generate_json import generate_report_json
@@ -166,9 +167,28 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
             skip_case_message=skip_case_message
         )
 
-        ## if case_status_code = = 200 then....., else.....
+        case_all_drs_object_info_attr = Case(
+            case_name="all fields in drs object info response",
+            case_description="check if there are undefined attributes present in the drs object info response",
+            algorithm=check_all_drs_object_info_attr,
+            actual_response=response,
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
+        )
+
+        case_all_drs_object_info_attr_types = Case(
+            case_name="data types of all fields in drs object info response",
+            case_description="check if all the attributes in drs object info response have expected data types",
+            algorithm=check_all_drs_object_info_attr_types,
+            actual_response=response,
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
+        )
+
         case_required_drs_object_info_attr = Case(
-            case_name="required response fields",
+            case_name="required fields in drs object info response",
             case_description="check if the response contains all the required attributes",
             algorithm=check_required_drs_object_info_attr,
             actual_response=response,
@@ -194,6 +214,8 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         this_test_obj.cases = [
             case_status_code,
             case_content_type,
+            case_all_drs_object_info_attr,
+            case_all_drs_object_info_attr_types,
             case_required_drs_object_info_attr,
             case_required_drs_object_info_checksums_attr
         ]
