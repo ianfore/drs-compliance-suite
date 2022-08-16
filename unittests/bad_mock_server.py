@@ -4,7 +4,7 @@ import os
 import re
 import datetime
 from constants import BAD_SERVER_URL
-from edit_data import *
+from edit_and_get_data import *
 
 bad_server_host = BAD_SERVER_URL.split("://")[1].split(":")[0]
 bad_server_port = BAD_SERVER_URL.split("://")[1].split(":")[1].replace("/","")

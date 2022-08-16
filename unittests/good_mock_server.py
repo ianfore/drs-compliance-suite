@@ -1,6 +1,6 @@
 from flask import Flask, request, Response
 import datetime
-from edit_data import write_drs_object, get_all_drs_objects, get_drs_object, get_drs_access_url
+from edit_and_get_data import write_drs_object, get_all_drs_objects, get_drs_object, get_drs_access_url, get_drs_object_bytes
 from collections.abc import Mapping
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,6 +9,7 @@ import json
 
 app = Flask(__name__)
 args = parse_args()
+
 app.config["auth_type"] = args.auth_type
 users = {
     "username": generate_password_hash("password")
@@ -28,9 +29,6 @@ def conditional_auth(dec, auth_config):
         else:
             return dec(func) #TODO: FAIL!!!
     return decorator
-
-
-
 
 @auth.verify_password
 def verify_password(username, password):
@@ -121,9 +119,9 @@ def get_object(obj_id):
             return Response(response=json.dumps(opts_obj), status=200, mimetype=accept_type)
 
 # Get Access URL
-@app.route('/ga4gh/drs/v1/objects/<obj_id>/access/<access_url>', methods=['GET'])
+@app.route('/ga4gh/drs/v1/objects/<obj_id>/access/<access_id>', methods=['GET'])
 @conditional_auth(auth.login_required,app.config["auth_type"])
-def get_access_url(obj_id, access_url):
+def get_access_url(obj_id, access_id):
     header_content = request.headers
     accept_type = "application/json"
 
@@ -131,7 +129,7 @@ def get_access_url(obj_id, access_url):
     if "accept" in header_content and header_content["accept"] not in [accept_type, "*/*"]:
         return Response(status=406)
 
-    access_url = get_drs_access_url(obj_id, access_url)
+    access_url = get_drs_access_url(obj_id, access_id, args.app_host, args.app_port)
 
     time_stamp = datetime.datetime.utcnow().isoformat()
     final_time_stamp = time_stamp[:time_stamp.find(".")] + "Z"
@@ -149,6 +147,38 @@ def get_access_url(obj_id, access_url):
     else:
         # Object found
         return Response(response=json.dumps(access_url), status=200, mimetype=accept_type)
+
+# Get DRS Object Bytes
+@app.route('/ga4gh/drs/v1/stream/<obj_id>/<access_id>', methods=['GET'])
+@conditional_auth(auth.login_required,app.config["auth_type"])
+def get_object_bytes(obj_id, access_id):
+    header_content = request.headers
+    accept_type = "application/json"
+
+    # validate the accept header
+    if "accept" in header_content and header_content["accept"] not in [accept_type, "*/*"]:
+        return Response(status=406)
+
+    # Get the object bytes
+    object_bytes = get_drs_object_bytes(obj_id, access_id)
+    print("OBH BYTES:")
+    print(object_bytes)
+    time_stamp = datetime.datetime.utcnow().isoformat()
+    final_time_stamp = time_stamp[:time_stamp.find(".")] + "Z"
+
+    if not object_bytes:
+        # Object not found
+        error_obj = {
+            "timestamp": final_time_stamp,
+            "status_code": 404,
+            "error": "Not Found",
+            "msg": "invalid access_id/object_id"
+        }
+
+        return Response(response=json.dumps(error_obj), status=404, mimetype=accept_type)
+    else:
+        # Object found
+        return Response(response=json.dumps(object_bytes), status=200, mimetype=accept_type)
 
 # Add new object
 @app.route('/ga4gh/drs/v1/objects/', methods=['POST'])

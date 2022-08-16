@@ -28,7 +28,7 @@
         "self_uri": "drs://localhost:4500/697907bf-d5bd-433e-aac2-1747f1faf366",
         "access_methods": [
             {
-                "access_id": "338e433b-e0f4-4261-9d25-1863b2dcf08d",
+                "access_id": "db070dcb-15cd-4a28-aa84-c7b3caa4f43a",
                 "type": "https"
             },
             {
