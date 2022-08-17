@@ -2,7 +2,8 @@ from report import Report, Phase, TestbedTest, Case
 from cases.service_info import check_required_service_info_attr, check_required_service_info_type_attr, check_required_service_info_org_attr
 from cases.common import check_status_code, check_content_type
 from cases.drs_object import check_all_drs_object_info_attr, check_all_drs_object_info_attr_types, \
-    check_required_drs_object_info_attr, check_required_drs_object_info_checksums_attr
+    check_required_drs_object_info_attr, check_required_drs_object_info_checksums_attr, \
+    check_drs_object_info_access_methods_attr
 import json
 import requests
 from generate_json import generate_report_json
@@ -177,6 +178,8 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
             skip_case_message=skip_case_message
         )
 
+        # import pdb;pdb.set_trace()
+
         case_all_drs_object_info_attr_types = Case(
             case_name="data types of all fields in drs object info response",
             case_description="check if all the attributes in drs object info response have expected data types",
@@ -207,6 +210,16 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
             skip_case_message=skip_case_message
         )
 
+        case_drs_object_info_access_methods_attr = Case(
+            case_name="access_methods field in drs object info response",
+            case_description="check if access_methods is a list of access_method objects",
+            algorithm=check_drs_object_info_access_methods_attr,
+            actual_response=response,
+            expected_response= interaction["response"],
+            skip_case=skip_case,
+            skip_case_message=skip_case_message
+        )
+
         this_test_name = interaction["test_name"]
         this_test_description = interaction["test_description"]
         this_test_obj = TestbedTest(this_test_name,this_test_description)
@@ -217,7 +230,8 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
             case_all_drs_object_info_attr,
             case_all_drs_object_info_attr_types,
             case_required_drs_object_info_attr,
-            case_required_drs_object_info_checksums_attr
+            case_required_drs_object_info_checksums_attr,
+            case_drs_object_info_access_methods_attr
         ]
         this_test_obj.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         drs_object_phase.tests.append(this_test_obj)
