@@ -3,9 +3,7 @@ import json
 import jsonschema
 from jsonschema import validate
 import os
-
-SCHEMA_FILE_PATH = "compliance_suite/schemas/"
-SCHEMA_FILE_PATH_ABS = os.path.dirname(os.path.abspath(SCHEMA_FILE_PATH))
+import constants
 
 class Report():
     def __init__(
@@ -81,8 +79,6 @@ class Case():
             case_description,
             actual_response,
             response_schema_file = "",
-            validate_schema = False,
-            # expected_response,
             skip_case = False,
             skip_case_message = ""):
         self.case_name = case_name
@@ -94,11 +90,8 @@ class Case():
         self.message = ""
         self.response_schema_file = response_schema_file
         self.actual_response = actual_response
-        self.validate_schema = validate_schema
-        # self.expected_response = expected_response # TODO: Are we using expected_response?
         self.skip_case = skip_case
         self.skip_case_message = skip_case_message
-        # self.run_case()
 
     def get_schema(self, schema_file_name):
         """This function loads the given schema available"""
@@ -108,21 +101,19 @@ class Case():
         return schema
 
     def validate_response_schema(self):
-        # import pdb; pdb.set_trace()
         self.start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         if (self.skip_case == False):
-            expected_schema_file_path = SCHEMA_FILE_PATH+ self.response_schema_file
+            expected_schema_file_path = constants.SCHEMA_FILE_PATH+ self.response_schema_file
             expected_schema = self.get_schema(expected_schema_file_path)
             abs_schema_file_path = os.path.dirname(os.path.abspath(expected_schema_file_path))
             reference_resolver = jsonschema.RefResolver(base_uri = "file://"+abs_schema_file_path+"/", referrer = None)
-            # TODO: make sure actual_response is json -> if not error (FAIL)
             try:
-                ### TODO: FIX!!!!! - Always passes!!!!!!!!!
-                validate(instance = self.actual_response,resolver = reference_resolver,schema=expected_schema)
+                validate(instance = self.actual_response.json(),resolver = reference_resolver,schema=expected_schema)
                 self.message = "Schema Validation Successful"
                 self.status = "PASS"
             except Exception as e:
-                self.message = "Schema Validation Failed. " + e.message
+                error_message = e.message if hasattr(e,"message") else str(e)
+                self.message = "Schema Validation Failed. " + error_message
                 self.log_message.append("Stack Trace: "+str(e))
                 self.status = "FAIL"
         else:
@@ -145,12 +136,12 @@ class Case():
         self.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         return
 
-    def validate_content_type(self):
+    def validate_content_type(self, expected_content_type):
         self.start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         if (self.skip_case == False):
-            if self.actual_response.headers["Content-Type"] == "application/json":
+            if self.actual_response.headers["Content-Type"] == expected_content_type:
                 self.status = "PASS"
-                self.message = "content type = application/json"
+                self.message = "content type = " + expected_content_type
             else:
                 self.status = "FAIL"
                 self.message = "content type = " + self.actual_response.headers["Content-Type"]
