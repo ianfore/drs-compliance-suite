@@ -36,7 +36,8 @@
       },
       "required": [
         "type"
-      ]
+      ],
+      "additionalProperties": false
     }
   }
 }
