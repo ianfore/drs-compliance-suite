@@ -36,3 +36,19 @@ python unittests/good_mock_server.py --auth_type "no_auth" --app_host "0.0.0.0" 
   * "bearer"
   * "passport"
 * **--app_host** : name of the host where the mock server is running
+
+## Running unittests for testing
+Note: Both bad and good mock servers should be running beforehand
+#### Running the mock servers
+```
+python unittests/good_mock_server.py --auth_type "no_auth" --app_host "0.0.0.0" --app_port "8089"
+python unittests/bad_mock_server.py --auth_type "no_auth" --app_host "0.0.0.0" --app_port "8088"
+```
+###### Run the tests
+```
+py.test -v
+```
+###### Check the code coverage of the tests
+```
+pytest --cov=compliance_suite unittests/ 
+```
