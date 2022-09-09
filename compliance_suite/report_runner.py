@@ -76,7 +76,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         drs_object_id = constants.DRS_OBJECT_ID_ABSENT,
         server_base_url = server_base_url,
         auth = auth,
-        expected_status_code = "400",
+        expected_status_code = "404",
         expected_content_type = "application/json")
 
     #### Add Tests to the Phase ####
@@ -209,15 +209,25 @@ def get_drs_object_test(
     skip_case_drs_object_response_msg = ""
     skip_case_drs_object_error_msg = ""
 
-    if (case_validate_drs_object_response_status.status != "PASS" \
-            or case_validate_drs_object_response_content_type.status != "PASS") and expected_status_code == "200":
+    # TODO: FIX THIS!!!
+    if  (expected_status_code == "200") and (
+            case_validate_drs_object_response_status.status == "PASS"
+            and case_validate_drs_object_response_content_type.status == "PASS"):
         skip_case_drs_object_error = True
-        skip_case_drs_object_error_msg = "skip validating drs object error response because " \
+        skip_case_drs_object_error_msg = "skip validating drs object error response schema because " \
                                          "status={} and content-type={}".format(expected_status_code, expected_content_type)
+
+    elif (expected_status_code == "200") and (
+            case_validate_drs_object_response_status.status != "PASS"
+            or case_validate_drs_object_response_content_type.status != "PASS"):
+        skip_case_drs_object_response = True
+        skip_case_drs_object_response_msg = "skip validating drs object success response schema because " \
+                                            "status!={} or content-type!={}. Instead validate the response using error schema".format(expected_status_code, expected_content_type)
+
     else:
         skip_case_drs_object_response = True
-        skip_case_drs_object_response_msg = "skip validating drs object success response because either " \
-                                            "status!=200 or content-type!={}".format(expected_content_type)
+        skip_case_drs_object_response_msg = "skip validating drs object success response schema because " \
+                                            "expected status = {}. Instead validate the response using error schema".format(expected_status_code)
 
     # CASE: CHECK SUCCESS RESPONSE SCHEMA
     case_validate_drs_object_response_schema = Case(

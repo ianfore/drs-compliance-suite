@@ -72,7 +72,6 @@ class TestbedTest():
         self.cases = []
 
 class Case():
-    # TODO: Add skip field, when skip is set, the case is not applicable for a given test interaction and will be skipped
     def __init__(
             self,
             case_name,

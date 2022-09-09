@@ -17,7 +17,7 @@
           "description": "The integer representing the HTTP status code (e.g. 200, 404)."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": true
     }
   }
 }
