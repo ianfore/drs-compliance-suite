@@ -1,6 +1,7 @@
 from report import Report, Phase, TestbedTest, Case
 import json
 import requests
+from base64 import b64encode
 from datetime import datetime
 from generate_json import generate_report_json
 from helper import Parser
@@ -9,15 +10,29 @@ import constants
 
 def report_runner(server_base_url, platform_name, platform_description, auth_type):
     # TODO: impelement bearer and passport, take the auth info from user
+    is_passport_auth = False
     if (auth_type == "no_auth"):
-        auth = None
+        headers = {}
+        with open("compliance_suite/config/config_"+auth_type+".json", 'r') as file:
+            config = json.load(file)
     elif (auth_type == "basic"):
-        # auth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ="
-        auth = ("username", "password")
+        with open("compliance_suite/config/config_"+auth_type+".json", 'r') as file:
+            config = json.load(file)
+        username = config["username"]
+        password = config["password"]
+        b64_encoded_username_password = b64encode(str.encode("{}:{}".format(username, password))).decode("ascii")
+        headers = { "Authorization" : "Basic {}".format(b64_encoded_username_password) }
     elif (auth_type == "bearer"):
-        auth = ""
+        with open("compliance_suite/config/config_"+auth_type+".json", 'r') as file:
+            config = json.load(file)
+        bearer_token = config["bearer_token"]
+        headers =  { "Authorization" : "Bearer {}".format(bearer_token) }
     elif (auth_type == "passport"):
-        auth = ""
+        with open("compliance_suite/config/config_"+auth_type+".json", 'r') as file:
+            config = json.load(file)
+        headers = {}
+        is_passport_auth = True
+    drs_objects = config["drs_objects"]
     report_object = Report(
         schema_name = "ga4gh-testbed-report",
         schema_version = "0.1.0",
@@ -40,7 +55,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         test_name = "service-info",
         test_description = "validate service-info status code, content-type, response and error schemas",
         server_base_url = server_base_url,
-        auth = auth,
+        headers = headers,
         expected_status_code = "200",
         expected_content_type= "application/json")
     service_info_phase.tests.append(service_info_test_1)
@@ -55,33 +70,33 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
     drs_object_phase = Phase("drs object info endpoint", "run all the tests for drs object info endpoint")
     drs_object_phase.start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
 
-    #### Test 1: When DRS Object is present in the DRS server ####
-    drs_object_test_1 = get_drs_object_test(
-        test_name = "run test cases on the drs object info endpoint for drs id = "
-                    + constants.DRS_OBJECT_ID_PRESENT + ". drs object is present in the drs server",
-        test_description = "validate drs object status code, content-type, response "
-                           "and error schemas when drs object is present in the drs server",
-        drs_object_id = constants.DRS_OBJECT_ID_PRESENT,
-        server_base_url = server_base_url,
-        auth = auth,
-        expected_status_code = "200",
-        expected_content_type = "application/json")
+    for this_drs_object in drs_objects:
 
-    #### Test 2: When DRS Object is absent in the DRS server ####
-    drs_object_test_2 = get_drs_object_test(
-        test_name = "run test cases on the drs object info endpoint for drs id = "
-                    + constants.DRS_OBJECT_ID_ABSENT + ". drs object is present in the drs server",
-        test_description = "validate drs object status code, content-type, response "
-                           "and error schemas when drs object is present in the drs server",
-        drs_object_id = constants.DRS_OBJECT_ID_ABSENT,
-        server_base_url = server_base_url,
-        auth = auth,
-        expected_status_code = "404",
-        expected_content_type = "application/json")
+        if this_drs_object["is_present_in_drs_server"]:
+            expected_status_code = "200"
+            present_absent_sub_str = "present"
+        else:
+            expected_status_code = "404"
+            present_absent_sub_str = "absent"
 
-    #### Add Tests to the Phase ####
-    drs_object_phase.tests.append(drs_object_test_1)
-    drs_object_phase.tests.append(drs_object_test_2)
+        drs_object_passport = None
+        if is_passport_auth:
+            drs_object_passport = this_drs_object["passport"]
+
+        this_drs_object_test = get_drs_object_test(
+            test_name = "run test cases on the drs object info endpoint for drs id = "
+                        + this_drs_object["id"] + ". drs object is "+present_absent_sub_str+" in the drs server",
+            test_description = "validate drs object status code, content-type, response "
+                               "and error schemas when drs object is "+present_absent_sub_str+" in the drs server",
+            drs_object_id = this_drs_object["id"],
+            server_base_url = server_base_url,
+            headers = headers,
+            expected_status_code = expected_status_code,
+            expected_content_type = "application/json",
+            is_passport_auth = is_passport_auth,
+            drs_object_passport = drs_object_passport
+        )
+        drs_object_phase.tests.append(this_drs_object_test)
     drs_object_phase.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
 
     report_object.phases.append(service_info_phase)
@@ -94,14 +109,14 @@ def get_service_info_test(
         test_name,
         test_description,
         server_base_url,
-        auth,
+        headers,
         expected_status_code,
         expected_content_type):
     #### Service Info Test Cases ####
     #### 1. response status = 200 ####
     service_info_test_1_start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     SERVICE_INFO_URL = "/service-info"
-    response = requests.request(method = "GET", url = server_base_url + SERVICE_INFO_URL, auth=auth)
+    response = requests.request(method = "GET", url = server_base_url + SERVICE_INFO_URL, headers = headers)
     # check that response_status is 200 -> if no -> case fail, if yes -> case pass
     # if no -> check error response json valid or not
     # if yes -> check success response json valid or not
@@ -171,19 +186,29 @@ def get_service_info_test(
     service_info_test_obj.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     return service_info_test_obj
 
-def get_drs_object_test(
+def get_drs_object_test (
         test_name,
         test_description,
         drs_object_id,
         server_base_url,
-        auth,
+        headers,
         expected_status_code,
-        expected_content_type):
+        expected_content_type,
+        is_passport_auth,
+        drs_object_passport):
     #### DRS Object Test Cases ####
     #### 1. response status = 200 ####
     drs_object_test_start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     DRS_OBJECT_INFO_SUB_URL = "/objects/"
-    response = requests.request(method = "GET", url = server_base_url + DRS_OBJECT_INFO_SUB_URL + drs_object_id, auth=auth)
+    if is_passport_auth:
+        request_body = {"passports":[drs_object_passport]}
+        response = requests.request(
+            method = "POST",
+            url = server_base_url + DRS_OBJECT_INFO_SUB_URL + drs_object_id,
+            headers = headers,
+            json = request_body)
+    else:
+        response = requests.request(method = "GET", url = server_base_url + DRS_OBJECT_INFO_SUB_URL + drs_object_id, headers = headers)
     # check that response_status is 200 -> if no -> case fail, if yes -> case pass
     # if no -> check error response json valid or not
     # if yes -> check success response json valid or not
@@ -263,16 +288,6 @@ def get_drs_object_test(
     drs_object_test_obj.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     return drs_object_test_obj
 
-
-
-
-
-
-
-
-
-
-
 if __name__=="__main__":
 
     args = Parser.parse_args()
@@ -281,7 +296,7 @@ if __name__=="__main__":
     report_json = report_runner(server_base_url = args.server_base_url,
                                 platform_name = args.platform_name,
                                 platform_description = args.platform_description,
-                                auth_type = args.auth_type);
+                                auth_type = args.auth_type)
 
     if not os.path.exists("./output"):
         os.makedirs("./output")

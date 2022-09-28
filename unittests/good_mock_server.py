@@ -14,8 +14,7 @@ users = {
     "username": generate_password_hash("password")
 }
 tokens = {
-    "secret-token-1": "john",
-    "secret-token-2": "susan"
+    "secret-token-1": "john"
 }
 
 auth_basic = HTTPBasicAuth()
@@ -48,19 +47,10 @@ def verify_password(username, password):
             check_password_hash(users.get(username), password):
         return username
 
-
-
 '''
 HTTP codes
-200:"Success"
-206:"Success. Filtered Subsequence"
-303:"Redirect to a url where sequence can be retrieved"
-400:"Bad Request",
-401:"Unauthorized",
-404:"Not Found",
-406:"Not Acceptable",
-416:"Range Not Satisfiable",
-501:"Not Implemented"
+200: "Retrieve info about the DRS service"
+500: "An unexpected error occured"
 '''
 
 # Get service info
@@ -95,6 +85,17 @@ def get_service_info():
 
     return Response(response=json.dumps(service_info_resp), status=200, mimetype=accept_type)
 
+'''
+HTTP codes
+200: "The DRS object was found successfully"
+202: "The operation is delayed and will continue asynchronously"
+400: "The request is malformed",
+401: "The request is unauthorized",
+403: "The requestor is not authorized to perform this action",
+404: "The requested DRS object was not Found",
+500: "An unexpected error occured"
+'''
+
 # GET Info about a DRS Object or
 # GET Info about a DRS Object through POST'ing a Passport
 @app.route('/ga4gh/drs/v1/objects/<obj_id>', methods=['GET','POST'])
@@ -102,7 +103,7 @@ def get_service_info():
 def get_object(obj_id):
     accept_type = "application/json"
     drs_obj = get_drs_object(obj_id)
-    if request.method == "GET":
+    if request.method == "GET" and app.config["auth_type"]!="passport":
         if not drs_obj: # Object not found
             error_obj = {
                 "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -113,9 +114,18 @@ def get_object(obj_id):
             return Response(response=json.dumps(error_obj), status=404, mimetype=accept_type)
         return Response(response=json.dumps(drs_obj), status=200, mimetype=accept_type)
 
-    elif request.method == "POST":
+    elif request.method == "POST" and app.config["auth_type"]=="passport":
         header_content = request.headers
         accept_type = "application/json"
+
+        if not drs_obj: # Object not found
+            error_obj = {
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "status_code": 404,
+                "error": "Not Found",
+                "msg": "No DrsObject found by id: " + obj_id
+            }
+            return Response(response=json.dumps(error_obj), status=404, mimetype=accept_type)
 
         if app.config["auth_type"]=="passport" and ("accept" in header_content and header_content["accept"] in [accept_type, "*/*"]):
             try:
@@ -143,8 +153,8 @@ def get_object(obj_id):
                 error_obj = {
                     "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "status_code": 500,
-                    "error": "Internal Error",
-                    "msg": "Internal Error. Exception: " + str(ex) +
+                    "error": "An unexpected error occured",
+                    "msg": "An unexpected error occured. Exception: " + str(ex) +
                            ". POST method can be used only if the app is running with auth_type as 'passport'. "
                            "Content-Type must be 'application/json"
                 }
@@ -154,8 +164,8 @@ def get_object(obj_id):
             error_obj = {
                 "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "status_code": 500,
-                "error": "Internal Error",
-                "msg": "POST method can be used only if the app is running with auth_type as 'passport'. "
+                "error": "An unexpected error occured",
+                "msg": "An unexpected error occured. POST method can be used only if the app is running with auth_type as 'passport'. "
                        "Content-Type must be 'application/json'"
             }
             return Response(response=json.dumps(error_obj), status=500, mimetype=accept_type)
@@ -174,6 +184,7 @@ def get_object(obj_id):
 @app.route('/ga4gh/drs/v1/objects/<obj_id>/access/<access_url>', methods=['GET'])
 @conditional_auth(app.config["auth_type"])
 def get_access_url(obj_id, access_url):
+    ## TODO: Add auth support
     header_content = request.headers
     accept_type = "application/json"
 

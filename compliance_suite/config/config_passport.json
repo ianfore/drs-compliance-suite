@@ -1,0 +1,15 @@
+{
+  "auth_type": "passport",
+  "drs_objects": [
+    {
+      "id": "697907bf-d5bd-433e-aac2-1747f1faf366",
+      "is_present_in_drs_server": true,
+      "passport": "passport-366"
+    },
+    {
+      "id": "697907bf-d5bd-433e-aac2-1747f1faf377",
+      "is_present_in_drs_server": false,
+      "passport": "passport-377"
+    }
+  ]
+}
