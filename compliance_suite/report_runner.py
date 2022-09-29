@@ -51,14 +51,14 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
     service_info_phase.start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
 
     #### Test 1: Test service-info endpoint response ####
-    service_info_test_1 = get_service_info_test(
+    this_service_info_test = get_service_info_test(
         test_name = "service-info",
         test_description = "validate service-info status code, content-type, response and error schemas",
         server_base_url = server_base_url,
         headers = headers,
         expected_status_code = "200",
         expected_content_type= "application/json")
-    service_info_phase.tests.append(service_info_test_1)
+    service_info_phase.tests.append(this_service_info_test)
     service_info_phase.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -114,7 +114,7 @@ def get_service_info_test(
         expected_content_type):
     #### Service Info Test Cases ####
     #### 1. response status = 200 ####
-    service_info_test_1_start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
+    this_service_info_test_start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     SERVICE_INFO_URL = "/service-info"
     response = requests.request(method = "GET", url = server_base_url + SERVICE_INFO_URL, headers = headers)
     # check that response_status is 200 -> if no -> case fail, if yes -> case pass
@@ -182,7 +182,7 @@ def get_service_info_test(
         case_validate_service_info_response_schema,
         case_validate_service_info_error_response_schema
     ]
-    service_info_test_obj.start_time = service_info_test_1_start_time
+    service_info_test_obj.start_time = this_service_info_test_start_time
     service_info_test_obj.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     return service_info_test_obj
 
