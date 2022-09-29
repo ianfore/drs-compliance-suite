@@ -1,12 +1,12 @@
-from report import Report, Phase, TestbedTest, Case
+from compliance_suite.report import Report, Phase, TestbedTest, Case
 import json
 import requests
 from base64 import b64encode
 from datetime import datetime
-from generate_json import generate_report_json
-from helper import Parser
+from compliance_suite.generate_json import generate_report_json
+from compliance_suite.helper import Parser
 import os
-import constants
+from compliance_suite.constants import SCHEMA_SERVICE_INFO, SCHEMA_ERROR, SCHEMA_DRS_OBJECT
 
 def report_runner(server_base_url, platform_name, platform_description, auth_type):
     # TODO: impelement bearer and passport, take the auth info from user
@@ -157,7 +157,7 @@ def get_service_info_test(
         case_name="service-info success response schema validation",
         case_description="validate service-info response schema when status= 200",
         actual_response=response,
-        response_schema_file = constants.SCHEMA_SERVICE_INFO,
+        response_schema_file = SCHEMA_SERVICE_INFO,
         skip_case=skip_case_service_info_response,
         skip_case_message=skip_case_service_info_response_msg
     )
@@ -168,7 +168,7 @@ def get_service_info_test(
         case_name="service-info error response schema validation",
         case_description="validate service-info response schema when status!= 200",
         actual_response=response,
-        response_schema_file = constants.SCHEMA_ERROR,
+        response_schema_file = SCHEMA_ERROR,
         skip_case=skip_case_service_info_error,
         skip_case_message=skip_case_service_info_error_msg
     )
@@ -259,7 +259,7 @@ def get_drs_object_test (
         case_name="drs object success response schema validation",
         case_description="response status= 200",
         actual_response=response,
-        response_schema_file = constants.SCHEMA_DRS_OBJECT,
+        response_schema_file = SCHEMA_DRS_OBJECT,
         skip_case=skip_case_drs_object_response,
         skip_case_message=skip_case_drs_object_response_msg
     )
@@ -270,7 +270,7 @@ def get_drs_object_test (
         case_name="drs object error response schema validation",
         case_description="response status!= 200",
         actual_response=response,
-        response_schema_file = constants.SCHEMA_ERROR,
+        response_schema_file = SCHEMA_ERROR,
         skip_case=skip_case_drs_object_error,
         skip_case_message=skip_case_drs_object_error_msg
     )
