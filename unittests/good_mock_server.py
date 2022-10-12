@@ -14,7 +14,7 @@ users = {
     "username": generate_password_hash("password")
 }
 tokens = {
-    "secret-token-1": "john"
+    "secret-bearer-token-1": "user-1"
 }
 
 auth_basic = HTTPBasicAuth()
