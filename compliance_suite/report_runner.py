@@ -11,7 +11,7 @@ import constants
 def report_runner(server_base_url, platform_name, platform_description, auth_type):
     # TODO: impelement bearer and passport, take the auth info from user
     is_passport_auth = False
-    if (auth_type == "no_auth"):
+    if (auth_type == "none"):
         headers = {}
         with open("compliance_suite/config/config_"+auth_type+".json", 'r') as file:
             config = json.load(file)

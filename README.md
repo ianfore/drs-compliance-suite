@@ -18,20 +18,20 @@ python compliance_suite/report_runner.py --server_base_url "http://localhost:500
 * **--platform_name** : name of the platform hosting the DRS server
 * **--platform_description** : description of the platform hosting the DRS server
 * **--auth_type** : type of authentication used in the DRS server implementation. It can be one of the following -
-  * "no_auth"
+  * "none"
   * "basic"
   * "bearer"
   * "passport"
 ## Running the good mock server
 ```
-python unittests/good_mock_server.py --auth_type "no_auth" --app_host "0.0.0.0" --app_port "8089"
+python unittests/good_mock_server.py --auth_type "none" --app_host "0.0.0.0" --app_port "8089"
 ```
 ### Command Line Arguments
 #### Required:
 * **--app_port** : port where the mock server is running
 #### Optional:
 * **--auth_type** : type of authentication. It can be one of the following -
-  * "no_auth"
+  * "none"
   * "basic"
   * "bearer"
   * "passport"
@@ -41,8 +41,8 @@ python unittests/good_mock_server.py --auth_type "no_auth" --app_host "0.0.0.0" 
 Note: Both bad and good mock servers should be running beforehand
 #### Running the mock servers
 ```
-python unittests/good_mock_server.py --auth_type "no_auth" --app_host "0.0.0.0" --app_port "8089"
-python unittests/bad_mock_server.py --auth_type "no_auth" --app_host "0.0.0.0" --app_port "8088"
+python unittests/good_mock_server.py --auth_type "none" --app_host "0.0.0.0" --app_port "8089"
+python unittests/bad_mock_server.py --auth_type "none" --app_host "0.0.0.0" --app_port "8088"
 ```
 ###### Run the tests
 ```

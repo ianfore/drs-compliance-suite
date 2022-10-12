@@ -22,7 +22,7 @@ auth_bearer = HTTPTokenAuth(scheme="Bearer")
 
 def conditional_auth(auth_config):
     def decorator(func):
-        if auth_config == "no_auth":
+        if auth_config == "none":
             # Return the function unchanged, not decorated.
             return func
         elif auth_config == "basic":

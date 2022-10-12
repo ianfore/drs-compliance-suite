@@ -133,7 +133,7 @@ class Parser:
                             required=False,
                             help="type of authentication used in the DRS implementation",
                             type=str,
-                            choices=["no_auth", "basic", "bearer", "passport"],
-                            default="no_auth")
+                            choices=["none", "basic", "bearer", "passport"],
+                            default="none")
         args = parser.parse_args()
         return (args)
