@@ -3,7 +3,9 @@ import json
 import jsonschema
 from jsonschema import validate
 import os
-import constants
+
+
+SCHEMA_DIR = os.path.join(os.path.dirname(__file__), 'schemas')
 
 class Report():
     def __init__(
@@ -102,7 +104,7 @@ class Case():
     def validate_response_schema(self):
         self.start_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
         if (self.skip_case == False):
-            expected_schema_file_path = constants.SCHEMA_FILE_PATH+ self.response_schema_file
+            expected_schema_file_path = SCHEMA_DIR + "/" + self.response_schema_file
             expected_schema = self.get_schema(expected_schema_file_path)
             abs_schema_file_path = os.path.dirname(os.path.abspath(expected_schema_file_path))
             reference_resolver = jsonschema.RefResolver(base_uri = "file://"+abs_schema_file_path+"/", referrer = None)

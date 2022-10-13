@@ -1,34 +1,36 @@
-from report import Report, Phase, TestbedTest, Case
+from compliance_suite.report import Report, Phase, TestbedTest, Case
 import json
 import requests
 from base64 import b64encode
 from datetime import datetime
-from generate_json import generate_report_json
-from helper import Parser
+from compliance_suite.generate_json import generate_report_json
+from compliance_suite.helper import Parser
 import os
-import constants
+from compliance_suite.constants import SCHEMA_SERVICE_INFO, SCHEMA_ERROR, SCHEMA_DRS_OBJECT
+
+CONFIG_DIR = os.path.join(os.path.dirname(__file__), 'config')
 
 def report_runner(server_base_url, platform_name, platform_description, auth_type):
     # TODO: impelement bearer and passport, take the auth info from user
     is_passport_auth = False
     if (auth_type == "none"):
         headers = {}
-        with open("compliance_suite/config/config_"+auth_type+".json", 'r') as file:
+        with open(CONFIG_DIR+"/config_"+auth_type+".json", 'r') as file:
             config = json.load(file)
     elif (auth_type == "basic"):
-        with open("compliance_suite/config/config_"+auth_type+".json", 'r') as file:
+        with open(CONFIG_DIR+"/config_"+auth_type+".json", 'r') as file:
             config = json.load(file)
         username = config["username"]
         password = config["password"]
         b64_encoded_username_password = b64encode(str.encode("{}:{}".format(username, password))).decode("ascii")
         headers = { "Authorization" : "Basic {}".format(b64_encoded_username_password) }
     elif (auth_type == "bearer"):
-        with open("compliance_suite/config/config_"+auth_type+".json", 'r') as file:
+        with open(CONFIG_DIR+"/config_"+auth_type+".json", 'r') as file:
             config = json.load(file)
         bearer_token = config["bearer_token"]
         headers =  { "Authorization" : "Bearer {}".format(bearer_token) }
     elif (auth_type == "passport"):
-        with open("compliance_suite/config/config_"+auth_type+".json", 'r') as file:
+        with open(CONFIG_DIR+"/config_"+auth_type+".json", 'r') as file:
             config = json.load(file)
         headers = {}
         is_passport_auth = True
@@ -157,7 +159,7 @@ def get_service_info_test(
         case_name="service-info success response schema validation",
         case_description="validate service-info response schema when status= 200",
         actual_response=response,
-        response_schema_file = constants.SCHEMA_SERVICE_INFO,
+        response_schema_file = SCHEMA_SERVICE_INFO,
         skip_case=skip_case_service_info_response,
         skip_case_message=skip_case_service_info_response_msg
     )
@@ -168,7 +170,7 @@ def get_service_info_test(
         case_name="service-info error response schema validation",
         case_description="validate service-info response schema when status!= 200",
         actual_response=response,
-        response_schema_file = constants.SCHEMA_ERROR,
+        response_schema_file = SCHEMA_ERROR,
         skip_case=skip_case_service_info_error,
         skip_case_message=skip_case_service_info_error_msg
     )
@@ -259,7 +261,7 @@ def get_drs_object_test (
         case_name="drs object success response schema validation",
         case_description="response status= 200",
         actual_response=response,
-        response_schema_file = constants.SCHEMA_DRS_OBJECT,
+        response_schema_file = SCHEMA_DRS_OBJECT,
         skip_case=skip_case_drs_object_response,
         skip_case_message=skip_case_drs_object_response_msg
     )
@@ -270,7 +272,7 @@ def get_drs_object_test (
         case_name="drs object error response schema validation",
         case_description="response status!= 200",
         actual_response=response,
-        response_schema_file = constants.SCHEMA_ERROR,
+        response_schema_file = SCHEMA_ERROR,
         skip_case=skip_case_drs_object_error,
         skip_case_message=skip_case_drs_object_error_msg
     )
@@ -288,8 +290,8 @@ def get_drs_object_test (
     drs_object_test_obj.end_time = datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     return drs_object_test_obj
 
-if __name__=="__main__":
 
+def main():
     args = Parser.parse_args()
     output_report_file_path = "./output/report_"+datetime.strftime(datetime.utcnow(), "%Y-%m-%d_%H-%M-%S")+".json"
 
@@ -304,3 +306,6 @@ if __name__=="__main__":
     # write output report to file
     with open(output_report_file_path, 'w', encoding='utf-8') as f:
         json.dump(report_json, f, ensure_ascii=False, indent=4)
+
+if __name__=="__main__":
+    main()
