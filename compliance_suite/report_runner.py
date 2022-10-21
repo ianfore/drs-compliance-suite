@@ -42,6 +42,8 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
     report_object.set_testbed_name(TESTBED_NAME)
     report_object.set_testbed_version(TESTBED_VERSION)
     report_object.set_testbed_description(TESTBED_DESCRIPTION)
+    report_object.set_platform_name(platform_name)
+    report_object.set_platform_description(platform_description)
 
     ### PHASE: /service-info
     service_info_phase = report_object.add_phase()
