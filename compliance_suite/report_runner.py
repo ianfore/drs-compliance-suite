@@ -14,11 +14,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
 
     # get authentication information from respective config file based on type of authentication
     is_passport_auth = False
-    if (auth_type == "none"):
-        headers = {}
-        with open(CONFIG_DIR+"/config_"+auth_type+".json", 'r') as file:
-            config = json.load(file)
-    elif (auth_type == "basic"):
+    if (auth_type == "basic"):
         with open(CONFIG_DIR+"/config_"+auth_type+".json", 'r') as file:
             config = json.load(file)
         username = config["username"]
@@ -35,7 +31,6 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
             config = json.load(file)
         headers = {}
         is_passport_auth = True
-    drs_objects = config["drs_objects"]
 
     # Create a compliance report object
     report_object = Report()
@@ -185,6 +180,16 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
 
         drs_object_test.set_end_time_now()
         drs_object_phase.set_end_time_now()
+
+        # TEST: GET /objects/{this_drs_object_id}/access/{this_access_id}
+
+
+
+
+
+
+
+
     report_object.set_end_time_now()
     report_object.finalize()
     return report_object.to_json()
