@@ -199,50 +199,91 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         case_drs_object_response_schema.set_end_time_now()
 
         drs_object_test.set_end_time_now()
-        drs_object_phase.set_end_time_now()
+    drs_object_phase.set_end_time_now()
 
-        # TEST: GET /objects/{this_drs_object_id}/access/{this_access_id}
-        drs_access_phase = report_object.add_phase()
-        drs_access_phase.set_phase_name("drs access endpoint")
-        drs_access_phase.set_phase_description("run all the tests for drs access endpoint")
+    # TEST: GET /objects/{this_drs_object_id}/access/{this_access_id}
+    drs_access_phase = report_object.add_phase()
+    drs_access_phase.set_phase_name("drs access endpoint")
+    drs_access_phase.set_phase_description("run all the tests for drs access endpoint")
 
-        for this_drs_object in drs_objects:
-            expected_status_code = "200"
-            expected_content_type = "application/json"
-            schema_file = DRS_ACCESS_SCHEMA
-            this_drs_object_id = this_drs_object["id"]
-            this_access_id = drs_object_access_url_map[this_drs_object_id]["access_id"]
+    for this_drs_object in drs_objects:
+        expected_status_code = "200"
+        expected_content_type = "application/json"
+        schema_file = DRS_ACCESS_SCHEMA
+        this_drs_object_id = this_drs_object["id"]
+        this_access_id = drs_object_access_url_map[this_drs_object_id]["access_id"]
 
-            ### TEST: GET /objects/{this_drs_object_id}/access/{this_access_id}
-            drs_access_test = drs_access_phase.add_test()
-            drs_access_test.set_test_name("run test cases on the drs access endpoint for "
-                                          "drs id = " + this_drs_object["id"]
-                                          + " and access id = " + this_access_id )
-            drs_access_test.set_test_description("validate drs access status code, content-type and "
-                                                 "response schemas")
+        ### TEST: GET /objects/{this_drs_object_id}/access/{this_access_id}
+        drs_access_test = drs_access_phase.add_test()
+        drs_access_test.set_test_name("run test cases on the drs access endpoint for "
+                                      "drs id = " + this_drs_object["id"]
+                                      + " and access id = " + this_access_id )
+        drs_access_test.set_test_description("validate drs access status code, content-type and "
+                                             "response schemas")
 
-            this_drs_object_passport = None
-            if auth_type=="passport":
-                # this_drs_object_passport = this_drs_object["passport"]
-                this_drs_object_passport = drs_object_passport_map[this_drs_object["id"]]
-                request_body = {"passports":[this_drs_object_passport]}
-                response = requests.request(
-                    method = "POST",
-                    url = server_base_url
-                          + DRS_OBJECT_INFO_URL + this_drs_object_id
-                          + DRS_ACCESS_URL + this_access_id,
-                    headers = headers,
-                    json = request_body)
-            else:
-                response = requests.request(method = "GET",
-                                            url = server_base_url
-                                                  + DRS_OBJECT_INFO_URL + this_drs_object_id
-                                                  + DRS_ACCESS_URL + this_access_id,
-                                            headers = headers)
+        this_drs_object_passport = None
+        if auth_type=="passport":
+            # this_drs_object_passport = this_drs_object["passport"]
+            this_drs_object_passport = drs_object_passport_map[this_drs_object["id"]]
+            request_body = {"passports":[this_drs_object_passport]}
+            response = requests.request(
+                method = "POST",
+                url = server_base_url
+                      + DRS_OBJECT_INFO_URL + this_drs_object_id
+                      + DRS_ACCESS_URL + this_access_id,
+                headers = headers,
+                json = request_body)
+        else:
+            response = requests.request(method = "GET",
+                                        url = server_base_url
+                                              + DRS_OBJECT_INFO_URL + this_drs_object_id
+                                              + DRS_ACCESS_URL + this_access_id,
+                                        headers = headers)
 
+        ### CASE: response status_code
+        case_drs_access_response_status = drs_access_test.add_case()
+        case_drs_access_response_status.set_case_name("drs access response status code validation")
+        case_drs_access_response_status.set_case_description("check if the response status code is "
+                                                             + expected_status_code)
 
-    # TODO add test cases
+        validate_case_drs_access_response_status = ValidateResponse()
+        validate_case_drs_access_response_status.set_case(case_drs_access_response_status)
+        validate_case_drs_access_response_status.set_actual_response(response)
+        validate_case_drs_access_response_status.validate_status_code(expected_status_code)
 
+        case_drs_access_response_status.set_end_time_now()
+
+        ### CASE: response content_type
+        case_drs_access_response_content_type = drs_access_test.add_case()
+        case_drs_access_response_content_type.set_case_name("drs access response content-type validation")
+        case_drs_access_response_content_type.set_case_description("check if the content-type is "
+                                                                   + expected_content_type)
+
+        validate_drs_access_info_response_content_type = ValidateResponse()
+        validate_drs_access_info_response_content_type.set_case(case_drs_access_response_content_type)
+        validate_drs_access_info_response_content_type.set_actual_response(response)
+        validate_drs_access_info_response_content_type.validate_content_type(expected_content_type)
+
+        case_drs_access_response_content_type.set_end_time_now()
+
+        ### CASE: response schema
+
+        case_drs_access_response_schema = drs_access_test.add_case()
+        case_drs_access_response_schema.set_case_name("drs object response schema validation")
+        case_drs_access_response_schema.set_case_description("validate drs object response schema "
+                                                             "when status = " + expected_status_code)
+
+        validate_case_drs_access_response_schema = ValidateResponse()
+        validate_case_drs_access_response_schema.set_case(case_drs_access_response_schema)
+        validate_case_drs_access_response_schema.set_actual_response(response)
+
+        validate_case_drs_access_response_schema.set_response_schema_file(DRS_ACCESS_SCHEMA)
+        validate_case_drs_access_response_schema.validate_response_schema()
+
+        case_drs_access_response_schema.set_end_time_now()
+
+        drs_access_test.set_end_time_now()
+    drs_access_phase.set_end_time_now()
     report_object.set_end_time_now()
     report_object.finalize()
     return report_object.to_json()
