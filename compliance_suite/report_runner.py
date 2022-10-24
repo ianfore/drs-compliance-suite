@@ -59,49 +59,38 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
                                            "and response schemas")
 
     SERVICE_INFO_URL = "/service-info"
-    response = requests.request(method = "GET", url = server_base_url + SERVICE_INFO_URL, headers = headers)
+    response = requests.request(
+        method = "GET",
+        url = server_base_url + SERVICE_INFO_URL,
+        headers = headers)
+
+    expected_status_code = "200"
+    expected_content_type = "application/json"
 
     ### CASE: response status_code
-    expected_status_code = "200"
-    case_service_info_response_status = service_info_test.add_case()
-    case_service_info_response_status.set_case_name("service-info response status code validation")
-    case_service_info_response_status.set_case_description("check if the response status code is "
-                                                           + expected_status_code)
-
-    validate_case_service_info_response_status = ValidateResponse()
-    validate_case_service_info_response_status.set_case(case_service_info_response_status)
-    validate_case_service_info_response_status.set_actual_response(response)
-    validate_case_service_info_response_status.validate_status_code(expected_status_code)
-
-    case_service_info_response_status.set_end_time_now()
+    add_case_status_code(
+        test_object = service_info_test,
+        expected_status_code = expected_status_code,
+        case_name = "service-info response status code validation",
+        case_description = "check if the response status code is " + expected_status_code,
+        response = response)
 
     ### CASE: response content_type
-    expected_content_type = "application/json"
-    case_service_info_response_content_type = service_info_test.add_case()
-    case_service_info_response_content_type.set_case_name("service-info response content-type validation")
-    case_service_info_response_content_type.set_case_description("check if the content-type is "
-                                                                 + expected_content_type)
 
-    validate_case_service_info_response_content_type = ValidateResponse()
-    validate_case_service_info_response_content_type.set_case(case_service_info_response_content_type)
-    validate_case_service_info_response_content_type.set_actual_response(response)
-    validate_case_service_info_response_content_type.validate_content_type(expected_content_type)
-
-    case_service_info_response_content_type.set_end_time_now()
+    add_case_content_type(
+        test_object = service_info_test,
+        expected_content_type = expected_content_type,
+        case_name = "service-info response content-type validation",
+        case_description = "check if the content-type is " + expected_content_type,
+        response = response)
 
     ### CASE: response schema
-    case_service_info_response_schema = service_info_test.add_case()
-    case_service_info_response_schema.set_case_name("service-info success response schema validation")
-    case_service_info_response_schema.set_case_description("validate service-info response schema "
-                                                           "when status = " + expected_status_code)
-
-    validate_case_service_info_response_schema = ValidateResponse()
-    validate_case_service_info_response_schema.set_case(case_service_info_response_schema)
-    validate_case_service_info_response_schema.set_actual_response(response)
-    validate_case_service_info_response_schema.set_response_schema_file(SERVICE_INFO_SCHEMA)
-    validate_case_service_info_response_schema.validate_response_schema()
-
-    case_service_info_response_schema.set_end_time_now()
+    add_case_response_schema(
+        test_object = service_info_test,
+        schema_name = SERVICE_INFO_SCHEMA,
+        case_name = "service-info success response schema validation",
+        case_description = "validate service-info response schema when status = " + expected_status_code,
+        response = response)
 
     service_info_test.set_end_time_now()
     service_info_phase.set_end_time_now()
@@ -115,19 +104,6 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
     for this_drs_object in drs_objects:
         expected_status_code = "200"
         expected_content_type = "application/json"
-        schema_file = DRS_OBJECT_SCHEMA
-
-        # if this_drs_object["is_present_in_drs_server"]:
-        #     expected_status_code = "200"
-        #     expected_content_type = "application/json"
-        #     test_description_substr = "present"
-        # # TODO: FIX THIS!!!
-        #     schema_file = DRS_OBJECT_SCHEMA
-        # else:
-        #     expected_status_code = "404"
-        #     expected_content_type = "application/json"
-        #     test_description_substr = "absent"
-        #     schema_file = ERROR_SCHEMA
         this_drs_object_id = this_drs_object["id"]
 
         ### TEST: GET /objects/{this_drs_object_id}
@@ -153,50 +129,28 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
                                         headers = headers)
 
         ### CASE: response status_code
-        case_drs_object_response_status = drs_object_test.add_case()
-        case_drs_object_response_status.set_case_name("drs object response status code validation")
-        case_drs_object_response_status.set_case_description("check if the response status code is "
-                                                             + expected_status_code)
-
-        validate_case_drs_object_response_status = ValidateResponse()
-        validate_case_drs_object_response_status.set_case(case_drs_object_response_status)
-        validate_case_drs_object_response_status.set_actual_response(response)
-        validate_case_drs_object_response_status.validate_status_code(expected_status_code)
-
-        case_drs_object_response_status.set_end_time_now()
+        add_case_status_code(
+            test_object = drs_object_test,
+            expected_status_code = expected_status_code,
+            case_name = "drs object response status code validation",
+            case_description = "check if the response status code is " + expected_status_code,
+            response = response)
 
         ### CASE: response content_type
-        case_drs_object_response_content_type = drs_object_test.add_case()
-        case_drs_object_response_content_type.set_case_name("drs object response content-type validation")
-        case_drs_object_response_content_type.set_case_description("check if the content-type is "
-                                                                   + expected_content_type)
-
-        validate_drs_object_info_response_content_type = ValidateResponse()
-        validate_drs_object_info_response_content_type.set_case(case_drs_object_response_content_type)
-        validate_drs_object_info_response_content_type.set_actual_response(response)
-        validate_drs_object_info_response_content_type.validate_content_type(expected_content_type)
-
-        case_drs_object_response_content_type.set_end_time_now()
+        add_case_content_type(
+            test_object = drs_object_test,
+            expected_content_type = expected_content_type,
+            case_name = "drs object response content-type validation",
+            case_description = "check if the content-type is " + expected_content_type,
+            response = response)
 
         ### CASE: response schema
-
-        case_drs_object_response_schema = drs_object_test.add_case()
-        case_drs_object_response_schema.set_case_name("drs object response schema validation")
-        case_drs_object_response_schema.set_case_description("validate drs object response schema "
-                                                             "when status = " + expected_status_code)
-
-        validate_case_drs_object_response_schema = ValidateResponse()
-        validate_case_drs_object_response_schema.set_case(case_drs_object_response_schema)
-        validate_case_drs_object_response_schema.set_actual_response(response)
-
-        validate_case_drs_object_response_schema.set_response_schema_file(DRS_OBJECT_SCHEMA)
-        # if this_drs_object["is_present_in_drs_server"]:
-        #     validate_case_drs_object_response_schema.set_response_schema_file(DRS_OBJECT_SCHEMA)
-        # else:
-        #     validate_case_drs_object_response_schema.set_response_schema_file(ERROR_SCHEMA)
-        validate_case_drs_object_response_schema.validate_response_schema()
-
-        case_drs_object_response_schema.set_end_time_now()
+        add_case_response_schema(
+            test_object = drs_object_test,
+            schema_name = DRS_OBJECT_SCHEMA,
+            case_name = "drs object response schema validation",
+            case_description = "validate drs object response schema when status = " + expected_status_code,
+            response = response)
 
         drs_object_test.set_end_time_now()
     drs_object_phase.set_end_time_now()
@@ -241,52 +195,71 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
                                         headers = headers)
 
         ### CASE: response status_code
-        case_drs_access_response_status = drs_access_test.add_case()
-        case_drs_access_response_status.set_case_name("drs access response status code validation")
-        case_drs_access_response_status.set_case_description("check if the response status code is "
-                                                             + expected_status_code)
-
-        validate_case_drs_access_response_status = ValidateResponse()
-        validate_case_drs_access_response_status.set_case(case_drs_access_response_status)
-        validate_case_drs_access_response_status.set_actual_response(response)
-        validate_case_drs_access_response_status.validate_status_code(expected_status_code)
-
-        case_drs_access_response_status.set_end_time_now()
+        add_case_status_code(
+            test_object = drs_access_test,
+            expected_status_code = expected_status_code,
+            case_name = "drs access response status code validation",
+            case_description = "check if the response status code is " + expected_status_code,
+            response = response)
 
         ### CASE: response content_type
-        case_drs_access_response_content_type = drs_access_test.add_case()
-        case_drs_access_response_content_type.set_case_name("drs access response content-type validation")
-        case_drs_access_response_content_type.set_case_description("check if the content-type is "
-                                                                   + expected_content_type)
-
-        validate_drs_access_info_response_content_type = ValidateResponse()
-        validate_drs_access_info_response_content_type.set_case(case_drs_access_response_content_type)
-        validate_drs_access_info_response_content_type.set_actual_response(response)
-        validate_drs_access_info_response_content_type.validate_content_type(expected_content_type)
-
-        case_drs_access_response_content_type.set_end_time_now()
+        add_case_content_type(
+            test_object = drs_access_test,
+            expected_content_type = expected_content_type,
+            case_name = "drs access response content-type validation",
+            case_description = "check if the content-type is " + expected_content_type,
+            response = response)
 
         ### CASE: response schema
-
-        case_drs_access_response_schema = drs_access_test.add_case()
-        case_drs_access_response_schema.set_case_name("drs object response schema validation")
-        case_drs_access_response_schema.set_case_description("validate drs object response schema "
-                                                             "when status = " + expected_status_code)
-
-        validate_case_drs_access_response_schema = ValidateResponse()
-        validate_case_drs_access_response_schema.set_case(case_drs_access_response_schema)
-        validate_case_drs_access_response_schema.set_actual_response(response)
-
-        validate_case_drs_access_response_schema.set_response_schema_file(DRS_ACCESS_SCHEMA)
-        validate_case_drs_access_response_schema.validate_response_schema()
-
-        case_drs_access_response_schema.set_end_time_now()
+        add_case_response_schema(
+            test_object = drs_access_test,
+            schema_name = DRS_ACCESS_SCHEMA,
+            case_name = "drs access response schema validation",
+            case_description = "validate drs access response schema when status = " + expected_status_code,
+            response = response)
 
         drs_access_test.set_end_time_now()
     drs_access_phase.set_end_time_now()
     report_object.set_end_time_now()
     report_object.finalize()
     return report_object.to_json()
+
+def add_case_status_code(test_object,expected_status_code, case_name, case_description, response):
+    case_response_status = test_object.add_case()
+    case_response_status.set_case_name(case_name)
+    case_response_status.set_case_description(case_description)
+
+    validate_response_status = ValidateResponse()
+    validate_response_status.set_case(case_response_status)
+    validate_response_status.set_actual_response(response)
+    validate_response_status.validate_status_code(expected_status_code)
+
+    case_response_status.set_end_time_now()
+
+def add_case_content_type(test_object,expected_content_type, case_name, case_description, response):
+    case_response_content_type = test_object.add_case()
+    case_response_content_type.set_case_name(case_name)
+    case_response_content_type.set_case_description(case_description)
+
+    validate_response_content_type = ValidateResponse()
+    validate_response_content_type.set_case(case_response_content_type)
+    validate_response_content_type.set_actual_response(response)
+    validate_response_content_type.validate_content_type(expected_content_type)
+
+    case_response_content_type.set_end_time_now()
+
+def add_case_response_schema(test_object,schema_name, case_name, case_description, response):
+    case_response_schema = test_object.add_case()
+    case_response_schema.set_case_name(case_name)
+    case_response_schema.set_case_description(case_description)
+
+    validate_response_schema = ValidateResponse()
+    validate_response_schema.set_case(case_response_schema)
+    validate_response_schema.set_actual_response(response)
+    validate_response_schema.set_response_schema_file(schema_name)
+    validate_response_schema.validate_response_schema()
+
+    case_response_schema.set_end_time_now()
 
 def main():
     args = Parser.parse_args()
