@@ -1,8 +1,8 @@
 from flask import Flask, request, Response
 import datetime
-from edit_data import write_drs_object, get_all_drs_objects, get_drs_object, get_drs_access_url
+from edit_data import write_drs_object, get_all_drs_objects, get_drs_object, get_drs_access_url, get_drs_object_passport
 from collections.abc import Mapping
-from flask_httpauth import HTTPBasicAuth
+from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from helper import parse_args
 import json
@@ -13,26 +13,35 @@ app.config["auth_type"] = args.auth_type
 users = {
     "username": generate_password_hash("password")
 }
-auth = HTTPBasicAuth()
+tokens = {
+    "secret-bearer-token-1": "user-1"
+}
 
-def conditional_auth(dec, auth_config):
+auth_basic = HTTPBasicAuth()
+auth_bearer = HTTPTokenAuth(scheme="Bearer")
+
+def conditional_auth(auth_config):
     def decorator(func):
-        if auth_config == "no_auth":
+        if auth_config == "none":
             # Return the function unchanged, not decorated.
             return func
         elif auth_config == "basic":
-            return dec(func)
+            return auth_basic.login_required(func)
         elif auth_config == "bearer":
-            return dec(func) # TODO: fix
-
-        else:
-            return dec(func) #TODO: FAIL!!!
+            return auth_bearer.login_required(func)
+        elif auth_config == "passport":
+            return func #TODO: FAIL!!!
+        return func
     return decorator
 
+@auth_bearer.verify_token
+def verify_token(token):
+    # import pdb; pdb.set_trace()
+    if token in tokens:
+        return tokens[token]
 
 
-
-@auth.verify_password
+@auth_basic.verify_password
 def verify_password(username, password):
     if username in users and \
             check_password_hash(users.get(username), password):
@@ -40,20 +49,13 @@ def verify_password(username, password):
 
 '''
 HTTP codes
-200:"Success"
-206:"Success. Filtered Subsequence"
-303:"Redirect to a url where sequence can be retrieved"
-400:"Bad Request",
-401:"Unauthorized",
-404:"Not Found",
-406:"Not Acceptable",
-416:"Range Not Satisfiable",
-501:"Not Implemented"
+200: "Retrieve info about the DRS service"
+500: "An unexpected error occured"
 '''
 
 # Get service info
 @app.route('/ga4gh/drs/v1/service-info', methods=['GET'])
-@conditional_auth(auth.login_required,app.config["auth_type"])
+@conditional_auth(app.config["auth_type"])
 def get_service_info():
     header_content = request.headers
     accept_type = "application/json"
@@ -83,47 +85,106 @@ def get_service_info():
 
     return Response(response=json.dumps(service_info_resp), status=200, mimetype=accept_type)
 
-# GET Object or OPTS Endpoint
-@app.route('/ga4gh/drs/v1/objects/<obj_id>', methods=['GET', 'OPTIONS'])
-@conditional_auth(auth.login_required,app.config["auth_type"])
+'''
+HTTP codes
+200: "The DRS object was found successfully"
+202: "The operation is delayed and will continue asynchronously"
+400: "The request is malformed",
+401: "The request is unauthorized",
+403: "The requestor is not authorized to perform this action",
+404: "The requested DRS object was not Found",
+500: "An unexpected error occured"
+'''
+
+# GET Info about a DRS Object or
+# GET Info about a DRS Object through POST'ing a Passport
+@app.route('/ga4gh/drs/v1/objects/<obj_id>', methods=['GET','POST'])
+@conditional_auth(app.config["auth_type"])
 def get_object(obj_id):
-    header_content = request.headers
     accept_type = "application/json"
-
-    # validate the accept header
-    if "accept" in header_content and header_content["accept"] not in [accept_type, "*/*"]:
-        return Response(status=406)
-
     drs_obj = get_drs_object(obj_id)
-
-    time_stamp = datetime.datetime.utcnow().isoformat()
-    final_time_stamp = time_stamp[:time_stamp.find(".")] + "Z"
-
-    if not drs_obj: # Object not found
-        error_obj = {
-            "timestamp": final_time_stamp,
-            "status_code": 404,
-            "error": "Not Found",
-            "msg": "No DrsObject found by id: " + obj_id
-        }
-
-        return Response(response=json.dumps(error_obj), status=404, mimetype=accept_type)
-    else:
-        if request.method == 'GET':
-            return Response(response=json.dumps(drs_obj), status=200, mimetype=accept_type)
-        elif request.method == 'OPTIONS':
-            opts_obj = {
-                "supported_types": [
-                    "None"
-                ]
+    if request.method == "GET" and app.config["auth_type"]!="passport":
+        if not drs_obj: # Object not found
+            error_obj = {
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "status_code": 404,
+                "error": "Not Found",
+                "msg": "No DrsObject found by id: " + obj_id
             }
+            return Response(response=json.dumps(error_obj), status=404, mimetype=accept_type)
+        return Response(response=json.dumps(drs_obj), status=200, mimetype=accept_type)
 
-            return Response(response=json.dumps(opts_obj), status=200, mimetype=accept_type)
+    elif request.method == "POST" and app.config["auth_type"]=="passport":
+        header_content = request.headers
+        accept_type = "application/json"
 
-# Get Access URL
+        if not drs_obj: # Object not found
+            error_obj = {
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "status_code": 404,
+                "error": "Not Found",
+                "msg": "No DrsObject found by id: " + obj_id
+            }
+            return Response(response=json.dumps(error_obj), status=404, mimetype=accept_type)
+
+        if app.config["auth_type"]=="passport" and ("accept" in header_content and header_content["accept"] in [accept_type, "*/*"]):
+            try:
+                request_body = request.get_json()
+                drs_obj_passport = get_drs_object_passport(obj_id)
+                if not request_body["passports"]:
+                    error_obj = {
+                        "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "status_code": 401,
+                        "error": "Request is unauthorized",
+                        "msg": "A passport is required to authorize the request"
+                    }
+                    return Response(response=json.dumps(error_obj), status=401, mimetype=accept_type)
+                elif drs_obj_passport in request_body["passports"]:
+                    return Response(response=json.dumps(drs_obj), status=200, mimetype=accept_type)
+                else:
+                    error_obj = {
+                        "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "status_code": 403,
+                        "error": "The requestor is not authorized to perform this action",
+                        "msg": "The passport provided does not grant access to the requested resource"
+                    }
+                    return Response(response=json.dumps(error_obj), status=403, mimetype=accept_type)
+            except Exception as ex:
+                error_obj = {
+                    "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "status_code": 500,
+                    "error": "An unexpected error occured",
+                    "msg": "An unexpected error occured. Exception: " + str(ex) +
+                           ". POST method can be used only if the app is running with auth_type as 'passport'. "
+                           "Content-Type must be 'application/json"
+                }
+            return Response(response=json.dumps(error_obj), status=500, mimetype=accept_type)
+
+        else:
+            error_obj = {
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "status_code": 500,
+                "error": "An unexpected error occured",
+                "msg": "An unexpected error occured. POST method can be used only if the app is running with auth_type as 'passport'. "
+                       "Content-Type must be 'application/json'"
+            }
+            return Response(response=json.dumps(error_obj), status=500, mimetype=accept_type)
+    else:
+        error_obj = {
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "status_code": 400,
+            "error": "The request is malformed",
+            "msg": "HTTP Method Not Allowed"
+        }
+        return Response(response=json.dumps(error_obj), status=400, mimetype=accept_type)
+
+
+# Get a URL for fetching bytes or
+# Get a URL for fetching bytes through POST'ing Passport
 @app.route('/ga4gh/drs/v1/objects/<obj_id>/access/<access_url>', methods=['GET'])
-@conditional_auth(auth.login_required,app.config["auth_type"])
+@conditional_auth(app.config["auth_type"])
 def get_access_url(obj_id, access_url):
+    ## TODO: Add auth support
     header_content = request.headers
     accept_type = "application/json"
 
@@ -149,40 +210,6 @@ def get_access_url(obj_id, access_url):
     else:
         # Object found
         return Response(response=json.dumps(access_url), status=200, mimetype=accept_type)
-
-# Add new object
-@app.route('/ga4gh/drs/v1/objects/', methods=['POST'])
-@conditional_auth(auth.login_required,app.config["auth_type"])
-def post_object():
-    header_content = request.headers
-    accept_type = "application/json"
-
-    # validate the accept header
-    if "accept" in header_content and header_content["accept"] not in [accept_type, "*/*"]:
-        return Response(status=406)
-
-    drs_obj = request.json
-
-    time_stamp = datetime.datetime.utcnow().isoformat()
-    final_time_stamp = time_stamp[:time_stamp.find(".")] + "Z"
-
-    if not isinstance(drs_obj, Mapping): # Validate that it is a dictionary
-        return Response(status=415)
-    else:
-        # Check if ID already exists
-        data = get_all_drs_objects()
-        if drs_obj["id"] in data:
-            error_obj = {
-                "timestamp": final_time_stamp,
-                "status_code": 409,
-                "error": "Conflict",
-                "msg": "A(n) DrsObject already exists at id " + drs_obj["id"]
-            }
-            return Response(response=json.dumps(error_obj), status=409, mimetype=accept_type)
-
-        # Add the drs object to the database
-        write_drs_object(drs_obj)
-        return Response(response=json.dumps(drs_obj), status=200, mimetype=accept_type)
 
 if __name__=="__main__":
     app.run(host=args.app_host,port=args.app_port)

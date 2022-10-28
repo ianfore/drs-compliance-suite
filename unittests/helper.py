@@ -7,10 +7,10 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--auth_type",
                         required=False,
-                        help="supported types are \"no_auth\", \"basic\", \"bearer\" ",
+                        help="supported types are \"none\", \"basic\", \"bearer\" ",
                         type=str,
-                        choices=["no_auth","basic","bearer","passport"],
-                        default="no_auth")
+                        choices=["none","basic","bearer","passport"],
+                        default="none")
     parser.add_argument("--app_host",
                         required=False,
                         help="name of the host where the mock server is running",

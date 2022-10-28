@@ -19,7 +19,8 @@
       "required": [
         "checksum",
         "type"
-      ]
+      ],
+      "additionalProperties": false
     }
   }
 }

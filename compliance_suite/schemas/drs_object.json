@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "DRS info object",
-  "description": "DRS info object v1.2",
+  "title": "DRS object info",
+  "description": "DRS object info v1.2",
   "type": "object",
   "$ref": "drs_object.json#/definitions/drs_object",
   "definitions": {
@@ -83,7 +83,8 @@
         "size",
         "created_time",
         "checksums"
-      ]
+      ],
+      "additionalProperties": false
     }
   }
 }

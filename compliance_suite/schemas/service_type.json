@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Service Info object",
+  "description": "Type of a GA4GH service",
+  "type": "object",
+  "$ref": "service_type.json#/definitions/service_type",
+  "definitions": {
+    "service_type": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "type": "string",
+          "description": "Namespace in reverse domain name format. Use `org.ga4gh` for implementations compliant with official GA4GH specifications. For services with custom APIs not standardized by GA4GH, or implementations diverging from official GA4GH specifications, use a different namespace (e.g. your organization's reverse domain name)."
+        },
+        "artifact": {
+          "type": "string",
+          "description": "Name of the API or GA4GH specification implemented. Official GA4GH types should be assigned as part of standards approval process. Custom artifacts are supported."
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of the API or specification. GA4GH specifications use semantic versioning."
+        }
+      },
+      "required": [
+        "group",
+        "artifact",
+        "version"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
