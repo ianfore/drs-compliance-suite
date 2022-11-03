@@ -74,7 +74,7 @@ def get_service_info():
         "type": {
             "group": "org.ga4gh",
             "artifact": "drs",
-            "version": "1.1.0"
+            "version": "1.2.0"
         },
         "organization": {
             "name": "Global Alliance for Genomics and Health",
