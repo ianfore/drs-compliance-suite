@@ -13,6 +13,12 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
 def report_runner(server_base_url, platform_name, platform_description, auth_type):
 
+    # Read input DRS objects from config folder
+    # TODO: Add lower and upper limits to input DRS objects
+    with open(CONFIG_DIR+"/input_drs_objects.json", 'r') as file:
+        input_drs = json.load(file)
+    input_drs_objects = input_drs["drs_objects"]
+
     # get authentication information from respective config file based on type of authentication
     headers = {}
     if (auth_type == "basic"):
@@ -28,16 +34,9 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         bearer_token = config["bearer_token"]
         headers =  { "Authorization" : "Bearer {}".format(bearer_token) }
     elif (auth_type == "passport"):
-        with open(DATA_DIR+"/drs_object_passport_mapping.json", 'r') as file:
-            drs_object_passport_map = json.load(file)
-
-    # read drs_objects, access_urls from data directory
-    # TODO! -> read 2 json files
-    with open(DATA_DIR+"/drs_objects.json", 'r') as file:
-        drs_objects = json.load(file)
-
-    with open(DATA_DIR+"/drs_object_access_url_mapping.json", 'r') as file:
-        drs_object_access_url_map = json.load(file)
+        with open(CONFIG_DIR+"/config_"+auth_type+".json", 'r') as file:
+            config = json.load(file)
+        drs_object_passport_map = config["drs_object_passport_map"]
 
     # Create a compliance report object
     report_object = Report()
@@ -101,31 +100,30 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
     drs_object_phase.set_phase_name("drs object info endpoint")
     drs_object_phase.set_phase_description("run all the tests for drs object info endpoint")
 
-    for this_drs_object in drs_objects:
+    for this_drs_object in input_drs_objects:
         expected_status_code = "200"
         expected_content_type = "application/json"
-        this_drs_object_id = this_drs_object["id"]
 
-        ### TEST: GET /objects/{this_drs_object_id}
+        ### TEST: GET /objects/{drs_id}
         drs_object_test = drs_object_phase.add_test()
         drs_object_test.set_test_name("run test cases on the drs object info endpoint for drs id = "
-                                      + this_drs_object["id"])
+                                      + this_drs_object["drs_id"])
         drs_object_test.set_test_description("validate drs object status code, content-type and "
                                              "response schemas")
 
         this_drs_object_passport = None
         if auth_type=="passport":
             # this_drs_object_passport = this_drs_object["passport"]
-            this_drs_object_passport = drs_object_passport_map[this_drs_object["id"]]
+            this_drs_object_passport = drs_object_passport_map[this_drs_object["drs_id"]]
             request_body = {"passports":[this_drs_object_passport]}
             response = requests.request(
                 method = "POST",
-                url = server_base_url + DRS_OBJECT_INFO_URL + this_drs_object_id,
+                url = server_base_url + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"],
                 headers = headers,
                 json = request_body)
         else:
             response = requests.request(method = "GET",
-                                        url = server_base_url + DRS_OBJECT_INFO_URL + this_drs_object_id,
+                                        url = server_base_url + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"],
                                         headers = headers)
 
         ### CASE: response status_code
@@ -155,43 +153,40 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         drs_object_test.set_end_time_now()
     drs_object_phase.set_end_time_now()
 
-    # TEST: GET /objects/{this_drs_object_id}/access/{this_access_id}
+    # TEST: GET /objects/{drs_id}/access/{access_id}
     drs_access_phase = report_object.add_phase()
     drs_access_phase.set_phase_name("drs access endpoint")
     drs_access_phase.set_phase_description("run all the tests for drs access endpoint")
 
-    for this_drs_object in drs_objects:
+    for this_drs_object in input_drs_objects:
         expected_status_code = "200"
         expected_content_type = "application/json"
-        schema_file = DRS_ACCESS_SCHEMA
-        this_drs_object_id = this_drs_object["id"]
-        this_access_id = drs_object_access_url_map[this_drs_object_id]["access_id"]
 
-        ### TEST: GET /objects/{this_drs_object_id}/access/{this_access_id}
+        ### TEST: GET /objects/{drs_id}/access/{access_id}
         drs_access_test = drs_access_phase.add_test()
         drs_access_test.set_test_name("run test cases on the drs access endpoint for "
-                                      "drs id = " + this_drs_object["id"]
-                                      + " and access id = " + this_access_id )
+                                      "drs id = " + this_drs_object["drs_id"]
+                                      + " and access id = " + this_drs_object["access_id"])
         drs_access_test.set_test_description("validate drs access status code, content-type and "
                                              "response schemas")
 
-        this_drs_object_passport = None
+        # this_drs_object_passport = None
         if auth_type=="passport":
             # this_drs_object_passport = this_drs_object["passport"]
-            this_drs_object_passport = drs_object_passport_map[this_drs_object["id"]]
+            this_drs_object_passport = drs_object_passport_map[this_drs_object["drs_id"]]
             request_body = {"passports":[this_drs_object_passport]}
             response = requests.request(
                 method = "POST",
                 url = server_base_url
-                      + DRS_OBJECT_INFO_URL + this_drs_object_id
-                      + DRS_ACCESS_URL + this_access_id,
+                      + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                      + DRS_ACCESS_URL + this_drs_object["access_id"],
                 headers = headers,
                 json = request_body)
         else:
             response = requests.request(method = "GET",
                                         url = server_base_url
-                                              + DRS_OBJECT_INFO_URL + this_drs_object_id
-                                              + DRS_ACCESS_URL + this_access_id,
+                                              + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                                              + DRS_ACCESS_URL + this_drs_object["access_id"],
                                         headers = headers)
 
         ### CASE: response status_code
