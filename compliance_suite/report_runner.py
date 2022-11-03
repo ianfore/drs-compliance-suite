@@ -1,5 +1,5 @@
 from ga4gh.testbed.report.report import Report
-from validate_response import ValidateResponse
+from compliance_suite.validate_response import ValidateResponse
 import json
 import requests
 from base64 import b64encode
@@ -7,6 +7,7 @@ from datetime import datetime
 from compliance_suite.helper import Parser
 import os
 from compliance_suite.constants import *
+from ga4gh.testbed.report.status import Status
 
 CONFIG_DIR = os.path.join(os.path.dirname(__file__), 'config')
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
@@ -75,13 +76,25 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         response = response)
 
     ### CASE: response content_type
-
     add_case_content_type(
         test_object = service_info_test,
         expected_content_type = expected_content_type,
         case_name = "service-info response content-type validation",
         case_description = "check if the content-type is " + expected_content_type,
         response = response)
+
+    # if any of the above two cases fail, the report runner
+    # will not be able to obtain the server's implemented DRS version number.
+    # Finalize and return report
+    for this_case in service_info_test.get_cases():
+        if this_case.get_status() != Status.PASS:
+            service_info_test.set_message("Stopping the report as the implemented DRS version "
+                                          "can not be obtained from the service-info endpoint")
+            service_info_test.set_end_time_now()
+            service_info_phase.set_end_time_now()
+            report_object.set_end_time_now()
+            report_object.finalize()
+            return report_object.to_json()
 
     ### CASE: response schema
     add_case_response_schema(
@@ -91,11 +104,31 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         case_description = "validate service-info response schema when status = " + expected_status_code,
         response = response)
 
+    # Get the DRS version number from service-info
+    # If the version is not supported by the compliance suite,
+    # finalize and return report
+
+    response_json = response.json()
+    server_drs_version = None
+    if "type" in response_json and "version" in response_json["type"]:
+        server_drs_version = response_json["type"]["version"]
+    if server_drs_version not in SUPPORTED_DRS_VERSIONS \
+            or response_json["type"]["artifact"].lower() != "drs":
+        service_info_test.set_message("Stopping the report as the implemented DRS version " + server_drs_version +
+                                      " is not supported by this Compliance Suite. "
+                                      "DRS versions currently supported by the DRS Compliance Suite - "
+                                      + ",".join(SUPPORTED_DRS_VERSIONS))
+        service_info_test.set_end_time_now()
+        service_info_phase.set_end_time_now()
+        report_object.set_end_time_now()
+        report_object.finalize()
+        return report_object.to_json()
+
     service_info_test.set_end_time_now()
     service_info_phase.set_end_time_now()
+    drs_version_schema_dir = "v" + server_drs_version + "/"
 
     ### PHASE: /object/{drs_id}
-
     drs_object_phase = report_object.add_phase()
     drs_object_phase.set_phase_name("drs object info endpoint")
     drs_object_phase.set_phase_description("run all the tests for drs object info endpoint")
@@ -145,7 +178,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         ### CASE: response schema
         add_case_response_schema(
             test_object = drs_object_test,
-            schema_name = DRS_OBJECT_SCHEMA,
+            schema_name = drs_version_schema_dir + DRS_OBJECT_SCHEMA,
             case_name = "drs object response schema validation",
             case_description = "validate drs object response schema when status = " + expected_status_code,
             response = response)
@@ -170,9 +203,8 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         drs_access_test.set_test_description("validate drs access status code, content-type and "
                                              "response schemas")
 
-        # this_drs_object_passport = None
+        this_drs_object_passport = None
         if auth_type=="passport":
-            # this_drs_object_passport = this_drs_object["passport"]
             this_drs_object_passport = drs_object_passport_map[this_drs_object["drs_id"]]
             request_body = {"passports":[this_drs_object_passport]}
             response = requests.request(
@@ -208,7 +240,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         ### CASE: response schema
         add_case_response_schema(
             test_object = drs_access_test,
-            schema_name = DRS_ACCESS_SCHEMA,
+            schema_name = drs_version_schema_dir + DRS_ACCESS_SCHEMA,
             case_name = "drs access response schema validation",
             case_description = "validate drs access response schema when status = " + expected_status_code,
             response = response)
