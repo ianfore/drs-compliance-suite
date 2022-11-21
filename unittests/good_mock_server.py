@@ -1,7 +1,6 @@
 from flask import Flask, request, Response
 import datetime
-from edit_data import write_drs_object, get_all_drs_objects, get_drs_object, get_drs_access_url, get_drs_object_passport
-from collections.abc import Mapping
+from edit_data import get_drs_object, get_drs_access_url, get_drs_object_passport
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from helper import parse_args

@@ -4,6 +4,23 @@ Tests to verify the compliance of a DRS implementation with GA4GH DRS v1.2 speci
 ## Installations
 Python 3.x is required to run DRS Compliance Suite.
 
+Install virtualenv package and create a new Python virtual environment
+```
+pip3 install virtualenv
+python3 -m virtualenv drs_venv
+```
+
+Install the packages from requirements.txt
+```
+cd drs-compliance-suite
+pip install -r requirements.txt
+```
+
+Add PYTHONPATH to env variables
+```
+export PYTHONPATH=<absolute path to drs-compliance-suite>
+```
+
 ## Running natively in a developer environment
 
 * First spin up a DRS starter kit on port 5000 or a port of your choice. Make sure to specify the port number correctly in the next step.
