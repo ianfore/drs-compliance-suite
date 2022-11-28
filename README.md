@@ -1,5 +1,7 @@
 # drs-compliance-suite
-Tests to verify the compliance of a DRS implementation with GA4GH DRS v1.2 specification 
+Tests to verify the compliance of a DRS implementation with GA4GH Data Repository Service (DRS) specification. 
+This compliance suite supports the following DRS versions
+* DRS 1.2.0
 
 ## Installations
 Python 3.x is required to run DRS Compliance Suite. We recomment using a virtual environment to run the compliance suite.
