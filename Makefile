@@ -1,7 +1,6 @@
 DOCKER_ORG := ga4gh
 DOCKER_REPO := drs-compliance-suite
-# DOCKER_TAG := $(shell cat build.gradle | grep "^version" | cut -f 2 -d ' ' | sed "s/'//g")
-DOCKER_TAG := test
+DOCKER_TAG := $(shell grep 'version=' setup.py | awk -F '"' '{print $$2}')
 DOCKER_IMG := ${DOCKER_ORG}/${DOCKER_REPO}:${DOCKER_TAG}
 
 # build docker image
@@ -16,7 +15,7 @@ docker-publish:
 
 .PHONY: run-docker
 run-docker:
-	docker run -v $(PWD)/output/:/usr/src/app/output/ ga4gh/drs-compliance-suite:test \
+	docker run -v $(PWD)/output/:/usr/src/app/output/ ga4gh/drs-compliance-suite:${DOCKER_TAG} \
 	--server_base_url "http://host.docker.internal:8089/ga4gh/drs/v1" \
 	--platform_name "ga4gh starter kit drs" --platform_description "GA4GH reference implementation of DRS specification" \
 	--auth_type "none" --report_path "./output/test-report.json"
