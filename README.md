@@ -1,6 +1,6 @@
 # drs-compliance-suite
 Tests to verify the compliance of a DRS implementation with GA4GH Data Repository Service (DRS) specification. 
-This compliance suite supports the following DRS versions
+This compliance suite currently supports the following DRS versions and will aim to support future versions of DRS as well.
 * DRS 1.2.0
 
 ## Installations
@@ -49,10 +49,23 @@ python compliance_suite/report_runner.py --server_base_url "http://localhost:500
   * "basic"
   * "bearer"
   * "passport"
+
+Depending on the auth type selected, the appropriate credentials must be provided by the end user
+* Example credentials may be found for the associated auth type
+  * "basic" : compliance_suite/config/config_basic.json
+  * "bearer" : compliance_suite/config/config_bearer.json
+  * "passport" : compliance_suite/config/config_passport.json
+
 ## Running the good mock server
 ```
 python unittests/good_mock_server.py --auth_type "none" --app_host "0.0.0.0" --app_port "8089"
 ```
+Make sure that the good mock server is running smoothly by making a GET request to 
+```
+http://localhost:8089/ga4gh/drs/v1/service-info
+```
+You should get a response status of 200
+
 ### Command Line Arguments
 #### Required:
 * **--app_port** : port where the mock server is running

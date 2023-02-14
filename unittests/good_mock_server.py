@@ -1,3 +1,4 @@
+import string
 from flask import Flask, request, Response
 import datetime
 from edit_data import get_drs_object, get_drs_access_url, get_drs_object_passport
@@ -100,8 +101,15 @@ HTTP codes
 @app.route('/ga4gh/drs/v1/objects/<obj_id>', methods=['GET','POST'])
 @conditional_auth(app.config["auth_type"])
 def get_object(obj_id):
+    expand = request.args.get('expand', "False")
+
+    # convert param to bool
+    if expand.lower() == "true": 
+        expand = True
+    else:
+        expand == False
     accept_type = "application/json"
-    drs_obj = get_drs_object(obj_id)
+    drs_obj = get_drs_object(obj_id, expand)
     if request.method == "GET" and app.config["auth_type"]!="passport":
         if not drs_obj: # Object not found
             error_obj = {
@@ -129,6 +137,20 @@ def get_object(obj_id):
         if app.config["auth_type"]=="passport" and ("accept" in header_content and header_content["accept"] in [accept_type, "*/*"]):
             try:
                 request_body = request.get_json()
+
+                if "expand" in request_body:
+                    if isinstance(request_body["expand"], bool):                    
+                        expand = request_body["expand"]
+                    elif isinstance(request_body["expand"], str):
+                        if request_body["expand"].lower() == "true": 
+                            expand = True
+                        else:
+                            expand = False 
+                    else:
+                        expand = False
+                
+                drs_obj = get_drs_object(obj_id, expand)
+
                 drs_obj_passport = get_drs_object_passport(obj_id)
                 if not request_body["passports"]:
                     error_obj = {
