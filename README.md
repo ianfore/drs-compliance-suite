@@ -99,7 +99,7 @@ python unittests/bad_mock_server.py --auth_type "none" --app_host "0.0.0.0" --ap
 ```
 ###### Run the tests
 ```
-py.test -v
+python -m pytest unittests/ -v
 ```
 ###### Check the code coverage of the tests
 ```
