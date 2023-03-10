@@ -247,7 +247,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
     report_object.finalize()
     return report_object.to_json()
 
-def add_case_status_code(test_object,expected_status_code, case_name, case_description, response):
+def add_case_status_code(test_object, expected_status_code, case_name, case_description, response):
     case_response_status = test_object.add_case()
     case_response_status.set_case_name(case_name)
     case_response_status.set_case_description(case_description)
@@ -259,7 +259,7 @@ def add_case_status_code(test_object,expected_status_code, case_name, case_descr
 
     case_response_status.set_end_time_now()
 
-def add_case_content_type(test_object,expected_content_type, case_name, case_description, response):
+def add_case_content_type(test_object, expected_content_type, case_name, case_description, response):
     case_response_content_type = test_object.add_case()
     case_response_content_type.set_case_name(case_name)
     case_response_content_type.set_case_description(case_description)
@@ -271,7 +271,7 @@ def add_case_content_type(test_object,expected_content_type, case_name, case_des
 
     case_response_content_type.set_end_time_now()
 
-def add_case_response_schema(test_object,schema_name, case_name, case_description, response):
+def add_case_response_schema(test_object, schema_name, case_name, case_description, response):
     case_response_schema = test_object.add_case()
     case_response_schema.set_case_name(case_name)
     case_response_schema.set_case_description(case_description)
