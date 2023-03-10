@@ -1,3 +1,4 @@
+import json
 from compliance_suite.report_runner import *
 
 def test_report_runner():
@@ -28,4 +29,14 @@ def test_report_runner():
     actual_json_s = str(actual_final_json).replace("'", '"').replace("\\","")
     expect_json_s = str(expect_final_json).replace("'", '"').replace("\\","")
 
+    # # print(actual_json_s)
+    # print("------------------------------------------------------------------")
+    # # print(expect_json_s)
+    # return
     assert actual_json_s == expect_json_s
+
+# test_report_runner()
+report_runner(server_base_url = "http://localhost:8089/ga4gh/drs/v1",
+                                    platform_name = "good mock server",
+                                    platform_description = "test",
+                                    auth_type = "basic")

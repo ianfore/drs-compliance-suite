@@ -15,12 +15,12 @@
     "input_parameters": {},
     "start_time": "",
     "end_time": "",
-    "status": "PASS",
+    "status": "FAIL",
     "summary": {
         "unknown": 0,
-        "passed": 27,
+        "passed": 34,
         "warned": 0,
-        "failed": 0,
+        "failed": 5,
         "skipped": 0
     },
     "phases": [
@@ -89,12 +89,12 @@
             "phase_description": "run all the tests for drs object info endpoint",
             "start_time": "",
             "end_time": "",
-            "status": "PASS",
+            "status": "FAIL",
             "summary": {
                 "unknown": 0,
-                "passed": 12,
+                "passed": 19,
                 "warned": 0,
-                "failed": 0,
+                "failed": 5,
                 "skipped": 0
             },
             "tests": [
@@ -271,6 +271,184 @@
                             "end_time": "",
                             "status": "PASS",
                             "message": "Schema Validation Successful"
+                        }
+                    ]
+                },
+                {
+                    "test_name": "get drs object with 404 response",
+                    "test_description": "requesting a DRS object that doesn't exist",
+                    "start_time": "",
+                    "end_time": "",
+                    "status": "PASS",
+                    "summary": {
+                        "unknown": 0,
+                        "passed": 3,
+                        "warned": 0,
+                        "failed": 0,
+                        "skipped": 0
+                    },
+                    "message": "",
+                    "cases": [
+                        {
+                            "case_name": "drs object response status code validation",
+                            "case_description": "check if the response status code is 404",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "PASS",
+                            "message": "response status code = 404"
+                        },
+                        {
+                            "case_name": "drs object response content-type validation",
+                            "case_description": "check if the content-type is application/json",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "PASS",
+                            "message": "content type = application/json"
+                        },
+                        {
+                            "case_name": "drs object response schema validation",
+                            "case_description": "validate drs object response schema when status = 404",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "PASS",
+                            "message": "Schema Validation Successful"
+                        }
+                    ]
+                },
+                {
+                    "test_name": "get drs object with 401 response",
+                    "test_description": "requesting a DRS object with no auth when required",
+                    "start_time": "",
+                    "end_time": "",
+                    "status": "FAIL",
+                    "summary": {
+                        "unknown": 0,
+                        "passed": 2,
+                        "warned": 0,
+                        "failed": 1,
+                        "skipped": 0
+                    },
+                    "message": "",
+                    "cases": [
+                        {
+                            "case_name": "drs object response status code validation",
+                            "case_description": "check if the response status code is 401",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "FAIL",
+                            "message": "response status code = 200"
+                        },
+                        {
+                            "case_name": "drs object response content-type validation",
+                            "case_description": "check if the content-type is application/json",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "PASS",
+                            "message": "content type = application/json"
+                        },
+                        {
+                            "case_name": "drs object response schema validation",
+                            "case_description": "validate drs object response schema when status = 401",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "PASS",
+                            "message": "Schema Validation Successful"
+                        }
+                    ]
+                },
+                {
+                    "test_name": "get drs object with 403 response",
+                    "test_description": "requesting a DRS object with invalid auth (eg. expired token) when required",
+                    "start_time": "",
+                    "end_time": "",
+                    "status": "FAIL",
+                    "summary": {
+                        "unknown": 0,
+                        "passed": 2,
+                        "warned": 0,
+                        "failed": 1,
+                        "skipped": 0
+                    },
+                    "message": "",
+                    "cases": [
+                        {
+                            "case_name": "drs object response status code validation",
+                            "case_description": "check if the response status code is 403",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "FAIL",
+                            "message": "response status code = 200"
+                        },
+                        {
+                            "case_name": "drs object response content-type validation",
+                            "case_description": "check if the content-type is application/json",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "PASS",
+                            "message": "content type = application/json"
+                        },
+                        {
+                            "case_name": "drs object response schema validation",
+                            "case_description": "validate drs object response schema when status = 403",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "PASS",
+                            "message": "Schema Validation Successful"
+                        }
+                    ]
+                },
+                {
+                    "test_name": "get drs object with 400 response",
+                    "test_description": "requesting a DRS object with malformed request (eg. typo)",
+                    "start_time": "",
+                    "end_time": "",
+                    "status": "FAIL",
+                    "summary": {
+                        "unknown": 0,
+                        "passed": 0,
+                        "warned": 0,
+                        "failed": 3,
+                        "skipped": 0
+                    },
+                    "message": "",
+                    "cases": [
+                        {
+                            "case_name": "drs object response status code validation",
+                            "case_description": "check if the response status code is 400",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "FAIL",
+                            "message": "response status code = 404"
+                        },
+                        {
+                            "case_name": "drs object response content-type validation",
+                            "case_description": "check if the content-type is application/json",
+                            "log_messages": [],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "FAIL",
+                            "message": "content type = text/html; charset=utf-8"
+                        },
+                        {
+                            "case_name": "drs object response schema validation",
+                            "case_description": "validate drs object response schema when status = 400",
+                            "log_messages": [
+                                "Stack Trace: Expecting value: line 1 column 1 (char 0)"
+                            ],
+                            "start_time": "",
+                            "end_time": "",
+                            "status": "FAIL",
+                            "message": "Expecting value: line 1 column 1 (char 0)"
                         }
                     ]
                 }
