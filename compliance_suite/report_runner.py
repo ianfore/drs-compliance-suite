@@ -47,12 +47,12 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
     report_object.set_platform_name(platform_name)
     report_object.set_platform_description(platform_description)
 
-    ### PHASE: /service-info
+    # # # 1. PHASE: /service-info # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
     service_info_phase = report_object.add_phase()
     service_info_phase.set_phase_name("service info endpoint")
     service_info_phase.set_phase_description("run all the tests for service_info endpoint")
 
-    ### TEST: GET service-info
+    ### 1.1. TEST: GET service-info
     service_info_test = service_info_phase.add_test()
     service_info_test.set_test_name("service-info")
     service_info_test.set_test_description("validate service-info status code, content-type "
@@ -123,7 +123,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
     service_info_phase.set_end_time_now()
     drs_version_schema_dir = "v" + server_drs_version + "/"
 
-    ### PHASE: /object/{drs_id}
+    ### 2. PHASE: /object/{drs_id} # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
     drs_object_phase = report_object.add_phase()
     drs_object_phase.set_phase_name("drs object info endpoint")
     drs_object_phase.set_phase_description("run all the tests for drs object info endpoint")
@@ -132,7 +132,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         expected_status_code = "200"
         expected_content_type = "application/json"
 
-        ### TEST: GET /objects/{drs_id}
+        ### 2.1. TEST: GET /objects/{drs_id}
         drs_object_test = drs_object_phase.add_test()
         drs_object_test.set_test_name("run test cases on the drs object info endpoint for drs id = "
                                       + this_drs_object["drs_id"])
@@ -179,7 +179,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
 
         drs_object_test.set_end_time_now()
 
-    # TEST: GET /objects/{drs_id} with non-existent DRS object (Response code: 404)
+    # 2.2 TEST: GET /objects/{drs_id} with non-existent DRS object (Response code: 404)
     drs_object_invalid_id_test = drs_object_phase.add_test()
     drs_object_invalid_id_test.set_test_name("get drs object with 404 response")
     drs_object_invalid_id_test.set_test_description("requesting a DRS object that doesn't exist")
@@ -226,7 +226,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
     drs_object_invalid_id_test.set_end_time_now()
 
     if auth_type!="none":
-        # TEST: GET /objects/{drs_id} with no auth token when required (Response code: 401)
+        # 2.3 TEST: GET /objects/{drs_id} with no auth token when required (Response code: 401)
         drs_object_no_auth_test = drs_object_phase.add_test()
         drs_object_no_auth_test.set_test_name("get drs object with 401 response")
         drs_object_no_auth_test.set_test_description("requesting a DRS object with no auth when required")
@@ -274,7 +274,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
 
         drs_object_no_auth_test.set_end_time_now()
 
-        # TEST: GET /objects/{drs_id} with invalid auth token (eg. expired) when required (Response code: 403)
+        # 2.4 TEST: GET /objects/{drs_id} with invalid auth token (eg. expired) when required (Response code: 403)
         drs_object_invalid_auth_test = drs_object_phase.add_test()
         drs_object_invalid_auth_test.set_test_name("get drs object with 403 response")
         drs_object_invalid_auth_test.set_test_description("requesting a DRS object with invalid auth (eg. expired token) when required")
@@ -332,7 +332,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
 
         drs_object_invalid_auth_test.set_end_time_now()
 
-    # TEST: GET /objects/{drs_id} with malformed request (Response code: 400)
+    # 2.5 TEST: GET /objects/{drs_id} with malformed request (Response code: 400)
     # TODO: Note: This is for 400 response, which is user error. Can't mimic 500 server error so skipping.
     drs_object_bad_request_test = drs_object_phase.add_test()
     drs_object_bad_request_test.set_test_name("get drs object with 400 response")
@@ -378,9 +378,10 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         response = response)
 
     drs_object_bad_request_test.set_end_time_now()
+
     drs_object_phase.set_end_time_now()
 
-    # TEST: GET /objects/{drs_id}/access/{access_id}
+    ### 3. PHASE: GET /objects/{drs_id}/access/{access_id} # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
     drs_access_phase = report_object.add_phase()
     drs_access_phase.set_phase_name("drs access endpoint")
     drs_access_phase.set_phase_description("run all the tests for drs access endpoint")
@@ -389,7 +390,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
         expected_status_code = "200"
         expected_content_type = "application/json"
 
-        ### TEST: GET /objects/{drs_id}/access/{access_id}
+        ### 3.1 TEST: GET /objects/{drs_id}/access/{access_id}
         drs_access_test = drs_access_phase.add_test()
         drs_access_test.set_test_name("run test cases on the drs access endpoint for "
                                       "drs id = " + this_drs_object["drs_id"]
@@ -440,8 +441,229 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
             response = response)
 
         drs_access_test.set_end_time_now()
+
+    # 3.2 TEST: GET /objects/{drs_id}/access/{access_id} with non-existent access ID (Response code: 404)
+    drs_access_invalid_id_test = drs_access_phase.add_test()
+    drs_access_invalid_id_test.set_test_name("run test case on the drs access endpoint for "
+                                    "drs id = " + this_drs_object["drs_id"]
+                                    + " and INCORRECT access id")
+    drs_access_invalid_id_test.set_test_description("validate drs access status code, content-type and "
+                                            "response schemas")
+
+    this_drs_object_passport = None
+    if auth_type=="passport":
+        this_drs_object_passport = drs_object_passport_map[this_drs_object["drs_id"]]
+        request_body = {"passports":[this_drs_object_passport]}
+        response = requests.request(
+            method = "POST",
+            url = server_base_url
+                    + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                    + DRS_ACCESS_URL + "000", # INCORRECT ACCESS ID
+            headers = headers,
+            json = request_body)
+    else:
+        response = requests.request(method = "GET",
+                                    url = server_base_url
+                                            + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                                            + DRS_ACCESS_URL + "000", # INCORRECT ACCESS ID
+                                    headers = headers)
+
+    ### CASE: response status_code
+    add_case_status_code(
+        test_object = drs_access_invalid_id_test,
+        expected_status_code = "404",
+        case_name = "drs access response status code validation",
+        case_description = "check if the response status code is 404",
+        response = response)
+
+    ### CASE: response content_type
+    add_case_content_type(
+        test_object = drs_access_invalid_id_test,
+        expected_content_type = expected_content_type,
+        case_name = "drs access response content-type validation",
+        case_description = "check if the content-type is " + expected_content_type,
+        response = response)
+
+    ### CASE: response schema
+    add_case_response_schema(
+        test_object = drs_access_invalid_id_test,
+        schema_name = drs_version_schema_dir + ERROR_SCHEMA,
+        case_name = "drs access response schema validation",
+        case_description = "validate drs access response schema when status = 404",
+        response = response)
+    
+    drs_access_invalid_id_test.set_end_time_now()
+
+    if auth_type!="none":
+        # 3.3 TEST: GET /objects/{drs_id}/access/{access_id} with no auth token when required (Response code: 401)
+        drs_access_no_auth_test = drs_access_phase.add_test()
+        drs_access_no_auth_test.set_test_name("get drs access with 401 response")
+        drs_access_no_auth_test.set_test_description("requesting a DRS access with no auth when required")
+
+        this_drs_object = input_drs_objects[0] # use the first DRS object in the list
+        this_drs_object_passport = None
+        if auth_type=="passport":
+            request_body = {"passports":[this_drs_object_passport]} # NO PASSPORT!
+            response = requests.request(
+                method = "POST",
+                url = server_base_url 
+                    + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                    + DRS_ACCESS_URL + this_drs_object["access_id"],
+                headers = headers,
+                json = request_body)
+        else:
+            headers_copy = dict(headers)
+            headers_copy["Authorization"] = None # NO AUTHORIZATION!
+
+            response = requests.request(method = "GET",
+                                        url = server_base_url 
+                                            + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                                            + DRS_ACCESS_URL + this_drs_object["access_id"],
+                                        headers = headers_copy)
+
+        ### CASE: response status_code
+        add_case_status_code(
+            test_object = drs_access_no_auth_test,
+            expected_status_code = "401",
+            case_name = "drs access response status code validation",
+            case_description = "check if the response status code is 401",
+            response = response)
+
+        ### CASE: response content_type
+        add_case_content_type(
+            test_object = drs_access_no_auth_test,
+            expected_content_type = expected_content_type,
+            case_name = "drs access response content-type validation",
+            case_description = "check if the content-type is " + expected_content_type,
+            response = response)
+
+        ### CASE: response schema
+        add_case_response_schema(
+            test_object = drs_access_no_auth_test,
+            schema_name = drs_version_schema_dir + ERROR_SCHEMA,
+            case_name = "drs access response schema validation",
+            case_description = "validate drs access response schema when status = 401",
+            response = response)
+
+        drs_access_no_auth_test.set_end_time_now()
+
+        # 3.4 TEST: GET /objects/{drs_id}/access/{access_id} with invalid auth token (eg. expired) when required (Response code: 403)
+        drs_access_invalid_auth_test = drs_access_phase.add_test()
+        drs_access_invalid_auth_test.set_test_name("get drs access endpoint with 403 response")
+        drs_access_invalid_auth_test.set_test_description("requesting a DRS access endpoint with invalid auth (eg. expired token) when required")
+
+        this_drs_object = input_drs_objects[0] # use the first DRS object in the list
+        this_drs_object_passport = None
+        if auth_type=="passport":
+            this_drs_object_passport = "invalid-passport" # INVALID PASSPORT!
+            request_body = {"passports":[this_drs_object_passport]}
+            response = requests.request(
+                method = "POST",
+                url = server_base_url 
+                    + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                    + DRS_ACCESS_URL + this_drs_object["access_id"],
+                headers = headers,
+                json = request_body)
+        else:
+            headers_copy = dict(headers)
+
+            # Mess up authorization depends on the type
+            if (auth_type == "basic"):
+                username = "wrong-username" # INCORRECT AUTHERIZATION!
+                password = "wrong-password"
+                b64_encoded_username_password = b64encode(str.encode("{}:{}".format(username, password))).decode("ascii")
+                headers_copy = { "Authorization" : "Basic {}".format(b64_encoded_username_password) }
+            elif (auth_type == "bearer"):
+                bearer_token = "wrong-bearer-token" # INCORRECT AUTHERIZATION!
+                headers_copy =  { "Authorization" : "Bearer {}".format(bearer_token) }
+
+            response = requests.request(method = "GET",
+                                        url = server_base_url 
+                                            + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                                            + DRS_ACCESS_URL + this_drs_object["access_id"],
+                                        headers = headers_copy)
+
+        ### CASE: response status_code
+        add_case_status_code(
+            test_object = drs_access_invalid_auth_test,
+            expected_status_code = "403",
+            case_name = "drs access response status code validation",
+            case_description = "check if the response status code is 403",
+            response = response)
+
+        ### CASE: response content_type
+        add_case_content_type(
+            test_object = drs_access_invalid_auth_test,
+            expected_content_type = expected_content_type,
+            case_name = "drs access response content-type validation",
+            case_description = "check if the content-type is " + expected_content_type,
+            response = response)
+
+        ### CASE: response schema
+        add_case_response_schema(
+            test_object = drs_access_invalid_auth_test,
+            schema_name = drs_version_schema_dir + ERROR_SCHEMA,
+            case_name = "drs access response schema validation",
+            case_description = "validate drs access response schema when status = 403",
+            response = response)
+
+        drs_access_invalid_auth_test.set_end_time_now()
+    
+    # 3.5 TEST: GET /objects/{drs_id}/access/{access_id} with malformed request (Response code: 400)
+    # TODO: Note: This is for 400 response, which is user error. Can't mimic 500 server error so skipping.
+    drs_access_bad_request_test = drs_access_phase.add_test()
+    drs_access_bad_request_test.set_test_name("get drs access endpoint with 400 response")
+    drs_access_bad_request_test.set_test_description("requesting a DRS access endpoint with malformed request (eg. typo)")
+
+    this_drs_object = input_drs_objects[0] # use the first DRS object in the list
+    this_drs_object_passport = None
+    if auth_type=="passport":
+        this_drs_object_passport = drs_object_passport_map[this_drs_object["drs_id"]]
+        request_body = {"passports":[this_drs_object_passport]}
+        response = requests.request(
+            method = "POST",
+            url = server_base_url 
+                + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                + "/wrong-path/" + this_drs_object["access_id"], # WRONG PATH!
+            headers = headers,
+            json = request_body)
+    else:
+        response = requests.request(method = "GET",
+                                    url = server_base_url 
+                                        + DRS_OBJECT_INFO_URL + this_drs_object["drs_id"]
+                                        + "/wrong-path/" + this_drs_object["access_id"], # WRONG PATH!
+                                    headers = headers)
+
+    ### CASE: response status_code
+    add_case_status_code(
+        test_object = drs_access_bad_request_test,
+        expected_status_code = "400",
+        case_name = "drs access response status code validation",
+        case_description = "check if the response status code is 400",
+        response = response)
+
+    ### CASE: response content_type
+    add_case_content_type(
+        test_object = drs_access_bad_request_test,
+        expected_content_type = expected_content_type,
+        case_name = "drs access response content-type validation",
+        case_description = "check if the content-type is " + expected_content_type,
+        response = response)
+
+    ### CASE: response schema
+    add_case_response_schema(
+        test_object = drs_access_bad_request_test,
+        schema_name = drs_version_schema_dir + ERROR_SCHEMA,
+        case_name = "drs access response schema validation",
+        case_description = "validate drs access response schema when status = 400",
+        response = response)
+
+    drs_access_bad_request_test.set_end_time_now()
+
     drs_access_phase.set_end_time_now()
+
     report_object.set_end_time_now()
+
     report_object.finalize()
     return report_object.to_json()
 

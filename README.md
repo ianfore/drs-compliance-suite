@@ -93,8 +93,8 @@ You should get a response status of 200
 Note: Both bad and good mock servers should be running beforehand
 #### Running the mock servers
 ```
-python unittests/good_mock_server_v1.2.0.py --auth_type "none" --app_host "0.0.0.0" --app_port "8085"
-python unittests/good_mock_server_v1.3.0.py --auth_type "none" --app_host "0.0.0.0" --app_port "8086"
+python unittests/good_mock_server_v1.2.0.py --auth_type "none" --app_host "0.0.0.0" --app_port "8089"
+python unittests/good_mock_server_v1.3.0.py --auth_type "none" --app_host "0.0.0.0" --app_port "8090"
 python unittests/bad_mock_server.py --auth_type "none" --app_host "0.0.0.0" --app_port "8088"
 ```
 ###### Run the tests
