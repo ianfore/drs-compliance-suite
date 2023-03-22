@@ -7,6 +7,7 @@ import os
 import structlog
 import zipfile
 from zipfile import ZipFile
+from supported_drs_versions import SUPPORTED_DRS_VERSIONS
 
 host_ip = socket.gethostbyname("")
 host_name = socket.getfqdn()
@@ -140,5 +141,10 @@ class Parser:
                             help="path of the output file",
                             type=str,
                             default="./output/drs_compliance_report.json")
+        parser.add_argument("--drs_version",
+                            required=True,
+                            help="DRS version implemented by the DRS server",
+                            type=str,
+                            choices=SUPPORTED_DRS_VERSIONS)
         args = parser.parse_args()
         return (args)
