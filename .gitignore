@@ -27,6 +27,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# DS Store
+.DS_Store
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -129,3 +132,21 @@ dmypy.json
 .pyre/
 
 .idea
+
+output/*
+null/*
+
+datastore/*
+
+# Mac OS files
+**/.DS_Store
+
+# Ignore dockstore workflow logs
+/tools/wdl/cromwell-executions
+/tools/wdl/cromwell-workflow-logs
+
+# Dockstore workflow results
+**/*.stderr.txt
+**/*.stdout.txt
+cwl-test-drs-compliance-report.json
+wdl-test-drs-compliance-report.json
