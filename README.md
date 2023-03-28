@@ -36,7 +36,7 @@ export PYTHONPATH=<absolute path to drs-compliance-suite>
 * First spin up a DRS starter kit on port 8085 or a port of your choice. Make sure to specify the port number correctly in the next step.
 * The following command will run the DRS complaince suite against the specified DRS implementation.
 ``` 
-python compliance_suite/report_runner.py --server_base_url "http://localhost:8085/ga4gh/drs/v1" --platform_name "ga4gh starter kit drs" --platform_description "GA4GH reference implementation of DRS specification" --auth_type "basic" --drs_version "1.2.0"
+python compliance_suite/report_runner.py --server_base_url "http://localhost:8085/ga4gh/drs/v1" --platform_name "ga4gh starter kit drs" --platform_description "GA4GH reference implementation of DRS specification" --auth_type "basic" --drs_version "1.2.0" --serve --serve_port 56565
 ```
 ### Command Line Arguments
 #### <TODO: Add a table with default values, data type !!>
@@ -51,6 +51,8 @@ python compliance_suite/report_runner.py --server_base_url "http://localhost:808
   * "passport"
 * **--drs_version** : version of DRS implemented by the DRS server. It can be one of the following -
   * "1.2.0"
+* **--serve** : If this flag is set, the output report is served as an html webpage.
+* **--serve_port** : The port where the output report html is deployed when serve option is used. Default value = 57568 
 
 Depending on the auth type selected, the appropriate credentials must be provided by the end user
 * Example credentials may be found for the associated auth type
