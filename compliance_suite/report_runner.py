@@ -462,6 +462,28 @@ def add_access_methods_test_case(
     test_case.set_end_time_now()
     return access_id_list
 
+def add_access_methods_test_case(test_object, case_type, case_description, endpoint_name, response):
+    """
+    Adds a test case to a Test object to check if access information is present in the drs_object response.
+    DRS v1.2.0 Spec - `access_methods`:
+     - Required for single blobs; optional for bundles.
+     - At least one of `access_url` and `access_id` must be provided.
+    """
+    test_case = test_object.add_case()
+    test_case.set_case_name(f"{endpoint_name} has access information")
+    test_case.set_case_description(case_description)
+
+    validate_drs_response = ValidateDRSObjectResponse()
+    validate_drs_response.set_case(test_case)
+    validate_drs_response.set_actual_response(response)
+
+    access_id_list = None
+    if case_type == "has_access_methods":
+        validate_drs_response.validate_has_access_methods()
+    elif case_type == "has_access_info":
+        access_id_list = validate_drs_response.validate_has_access_info()
+    test_case.set_end_time_now()
+    return access_id_list
 
 def main():
     args = Parser.parse_args()
