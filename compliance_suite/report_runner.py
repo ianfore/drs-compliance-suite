@@ -462,6 +462,7 @@ def add_access_methods_test_case(
     test_case.set_end_time_now()
     return access_id_list
 
+
 def main():
     args = Parser.parse_args()
 
