@@ -1,7 +1,12 @@
 {
+  "service_info" : {
+    "auth_type": "none",
+    "auth_token": ""
+  },
   "drs_objects" : [
     {
       "drs_id" : "697907bf-d5bd-433e-aac2-1747f1faf366",
+<<<<<<< HEAD:compliance_suite/config/input_drs_objects.json
       "access_id" : "338e433b-e0f4-4261-9d25-1863b2dcf08d",
       "is_bundle": false
     },
@@ -24,6 +29,25 @@
       "drs_id" : "a1dd4ae2-8d26-43b0-a199-342b64c7dff6",
       "access_id" : "a1dd4ae2-8d26-43b0-a199-342b64c7dff6",
       "is_bundle": true
+=======
+      "auth_type": "none",
+      "auth_token": ""
+    },
+    {
+      "drs_id" : "0bb9d297-2710-48f6-ab4d-80d5eb0c9eaa",
+      "auth_type": "none",
+      "auth_token": ""
+    },
+    {
+      "drs_id" : "1af6b862-7fc8-411a-86c5-d8e280e5b77a",
+      "auth_type": "none",
+      "auth_token": ""
+    },
+    {
+      "drs_id" : "41898242-62a9-4129-9a2c-5a4e8f5f0afb",
+      "auth_type": "none",
+      "auth_token": ""
+>>>>>>> 90b677a (Add config file as command line argument (#37)):compliance_suite/config/config_samples/config_none.json
     }
   ]
 }
