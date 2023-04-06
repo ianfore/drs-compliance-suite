@@ -211,6 +211,7 @@ def test_drs_object_info(
         schema_dir = schema_dir,
         schema_file = schema_file)
 
+<<<<<<< HEAD
     # Response with expand parameter set to true
     response = send_request(
         server_base_url,
@@ -233,6 +234,8 @@ def test_drs_object_info(
             response = response,
             schema_name = os.path.join(schema_dir, DRS_BUNDLE_SCHEMA))
             
+=======
+>>>>>>> 87d2b59 (get access_id values from drs object endpoint response (#34))
     add_access_methods_test_case(
         test_object = drs_object_test,
         case_type = "has_access_methods",
@@ -391,10 +394,13 @@ def add_test_case_common(test_object, case_type, **kwargs):
     elif case_type == 'response_schema':
         validate_response.set_response_schema_file(kwargs['schema_name'])
         validate_response.validate_response_schema()
+<<<<<<< HEAD
     elif case_type == 'expand_bundle':
         validate_response.set_response_schema_file(kwargs['schema_name'])
         validate_response.validate_expand_bundle()
 
+=======
+>>>>>>> 87d2b59 (get access_id values from drs object endpoint response (#34))
     test_case.set_end_time_now()
 
 def add_access_methods_test_case(test_object, case_type, case_description, endpoint_name, response):
