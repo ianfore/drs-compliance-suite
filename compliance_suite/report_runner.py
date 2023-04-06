@@ -212,6 +212,9 @@ def test_drs_object_info(
         schema_file = schema_file)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> bc3eccc (Adding expand parameter bundle testing to report runner (#36))
     # Response with expand parameter set to true
     response = send_request(
         server_base_url,
@@ -228,14 +231,22 @@ def test_drs_object_info(
         ### CASE: response expand bundle
         add_test_case_common(
             test_object = drs_object_test,
+<<<<<<< HEAD
             case_type = "expand_bundle",
+=======
+            case_type = "response_schema",
+>>>>>>> bc3eccc (Adding expand parameter bundle testing to report runner (#36))
             case_name = "DRS Access expand bundle validation",
             case_description = f"Validate DRS bundle when expand = True",
             response = response,
             schema_name = os.path.join(schema_dir, DRS_BUNDLE_SCHEMA))
+<<<<<<< HEAD
             
 =======
 >>>>>>> 87d2b59 (get access_id values from drs object endpoint response (#34))
+=======
+
+>>>>>>> bc3eccc (Adding expand parameter bundle testing to report runner (#36))
     add_access_methods_test_case(
         test_object = drs_object_test,
         case_type = "has_access_methods",
