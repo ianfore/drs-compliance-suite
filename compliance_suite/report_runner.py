@@ -91,6 +91,7 @@ def report_runner(server_base_url, platform_name, platform_description, auth_typ
             auth_type,
             drs_object_passport_map = drs_object_passport_map,
             drs_object_id = this_drs_object["drs_id"],
+            is_bundle = this_drs_object["is_bundle"],
             schema_dir = schema_dir,
             schema_file = DRS_OBJECT_SCHEMA,
             expected_status_code = "200",
@@ -180,6 +181,7 @@ def test_drs_object_info(
         auth_type,
         drs_object_passport_map,
         drs_object_id,
+        is_bundle,
         schema_dir,
         schema_file,
         expected_status_code,
@@ -207,6 +209,28 @@ def test_drs_object_info(
         expected_content_type = expected_content_type,
         schema_dir = schema_dir,
         schema_file = schema_file)
+
+    # Response with expand parameter set to true
+    response = send_request(
+        server_base_url,
+        DRS_OBJECT_INFO_URL + drs_object_id,
+        headers,
+        auth_type,
+        drs_object_passport_map = drs_object_passport_map,
+        drs_object_id = drs_object_id,
+        params = {'expand': True})
+
+    # TODO: find way to determine if object is bundle or to be skipped
+    # Skip test if contents field is not available
+    if is_bundle:
+        ### CASE: response expand bundle
+        add_test_case_common(
+            test_object = drs_object_test,
+            case_type = "response_schema",
+            case_name = "DRS Access expand bundle validation",
+            case_description = f"Validate DRS bundle when expand = True",
+            response = response,
+            schema_name = os.path.join(schema_dir, DRS_BUNDLE_SCHEMA))
 
     add_access_methods_test_case(
         test_object = drs_object_test,
@@ -277,7 +301,12 @@ def send_request(
         # 1. DRS Objects: /objects/{object_id}
         # 2. DRS Object Access: /objects/{object_id}/access/{access_id}
         drs_object_passport = kwargs["drs_object_passport_map"][kwargs["drs_object_id"]]
-        request_body = {"passports": [drs_object_passport]}
+        
+        if 'expand' in kwargs.keys():
+            request_body = {"passports": [drs_object_passport], "expand": True}
+        else:
+            request_body = {"passports": [drs_object_passport]}
+
         http_method = "POST"
     elif auth_type in ("basic", "bearer", "none") or endpoint_url == SERVICE_INFO_URL:
         # endpoint Service Info: /service-info allows auth_type: "basic", "bearer" or "none"
@@ -285,9 +314,15 @@ def send_request(
     else:
         raise ValueError("Invalid auth_type")
 
+    if 'expand' in kwargs.keys() and auth_type != "passport":
+        params = {'expand': True}
+    else:
+        params = {}
+
     response = requests.request(
         method = http_method,
         url = server_base_url + endpoint_url,
+        params = params,
         json = request_body,
         headers = headers)
 
