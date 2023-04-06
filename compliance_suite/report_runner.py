@@ -238,12 +238,15 @@ def test_drs_object_info(
             response = response,
             schema_name = os.path.join(schema_dir, DRS_BUNDLE_SCHEMA))
 <<<<<<< HEAD
+<<<<<<< HEAD
             
 =======
 >>>>>>> 87d2b59 (get access_id values from drs object endpoint response (#34))
 =======
 
 >>>>>>> bc3eccc (Adding expand parameter bundle testing to report runner (#36))
+=======
+>>>>>>> c1e5a05 (add drs bundle schema to constants)
     add_access_methods_test_case(
         test_object = drs_object_test,
         case_type = "has_access_methods",
