@@ -138,7 +138,7 @@ def test_service_info(
         expected_content_type):
 
     service_info_test = service_info_phase.add_test()
-    service_info_test.set_test_name("Run test cases on the service-info endpoint")
+    service_info_test.set_test_name(f"Run test cases on the service-info endpoint; auth_type = {auth_type}")
     service_info_test.set_test_description("validate service-info status code, content-type "
                                        "and response schemas")
 
@@ -173,7 +173,7 @@ def test_drs_object_info(
 
     global drs_objects_access_id_map
     drs_object_test = drs_object_phase.add_test()
-    drs_object_test.set_test_name(f"Run test cases on the drs object info endpoint for drs id = {drs_object_id}")
+    drs_object_test.set_test_name(f"Run test cases on the drs object info endpoint for drs id = {drs_object_id}; auth_type = {auth_type}")
     drs_object_test.set_test_description("validate drs object status code, content-type and response schemas")
     endpoint_name = "DRS Object Info"
 
@@ -252,7 +252,8 @@ def test_drs_object_info(
         endpoint_name = endpoint_name,
         response = response,
         skip_access_methods_test_cases = skip_access_methods_test_cases,
-        skip_message = skip_message)
+        skip_message = skip_message,
+        is_bundle=is_bundle)
 
     drs_objects_access_id_map[drs_object_id] = add_access_methods_test_case(
         test_object = drs_object_test,
@@ -263,7 +264,8 @@ def test_drs_object_info(
         endpoint_name = endpoint_name,
         response = response,
         skip_access_methods_test_cases = skip_access_methods_test_cases,
-        skip_message = skip_message)
+        skip_message = skip_message,
+        is_bundle=is_bundle)
 
     drs_object_test.set_end_time_now()
 
@@ -281,7 +283,7 @@ def test_drs_object_access(
 
     drs_access_test = drs_access_phase.add_test()
     drs_access_test.set_test_name(f"Run test cases on the drs access endpoint for drs id = {drs_object_id} "
-                                  f"and access id = {drs_access_id}")
+                                  f"and access id = {drs_access_id}; auth_type = {auth_type}")
     drs_access_test.set_test_description("validate drs access status code, content-type and response schemas")
 
     response = send_request(
@@ -429,7 +431,8 @@ def add_access_methods_test_case(
         endpoint_name,
         response,
         skip_access_methods_test_cases,
-        skip_message):
+        skip_message,
+        is_bundle):
     """
     Adds a test case to a Test object to check if access information is present in the drs_object response.
     DRS v1.2.0 Spec - `access_methods`:
@@ -450,9 +453,12 @@ def add_access_methods_test_case(
 
     access_id_list = None
     if case_type == "has_access_methods":
+        if is_bundle:
+            test_case.set_status_skip()
+            test_case.set_message("Skip this test case as access_methods is optional for a DRS Bundle")
         validate_drs_response.validate_has_access_methods()
     elif case_type == "has_access_info":
-        access_id_list = validate_drs_response.validate_has_access_info()
+        access_id_list = validate_drs_response.validate_has_access_info(is_bundle)
     test_case.set_end_time_now()
     return access_id_list
 
