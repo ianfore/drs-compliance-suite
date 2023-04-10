@@ -23,7 +23,7 @@ class ValidateDRSObjectResponse(ValidateResponse):
             self.case.set_end_time_now()
         return
 
-    def validate_has_access_info(self):
+    def validate_has_access_info(self, is_bundle):
         access_id_list = []
         if self.case.get_status() == Status.SKIP:
             self.case.set_end_time_now()
@@ -43,8 +43,12 @@ class ValidateDRSObjectResponse(ValidateResponse):
             self.case.set_message(f"At least 'access_url' or 'access_id' is provided in all access_methods")
             self.case.set_status_pass()
         elif not access_methods:
-            self.case.set_message(f"access_methods is not provided. It is required and should be non-empty for a single-blob")
-            self.case.set_status_fail()
+            if is_bundle:
+                self.case.set_message(f"access_methods is not provided. It is not required for a DRS Bundle")
+                self.case.set_status_pass()
+            else:
+                self.case.set_message(f"access_methods is not provided. It is required and should be non-empty for a single-blob")
+                self.case.set_status_fail()
         else:
             self.case.set_message(f"Neither 'access_url' nor 'access_id' is provided in some or all access_methods - {', '.join(methods_with_no_access_info)}")
             self.case.set_status_fail()

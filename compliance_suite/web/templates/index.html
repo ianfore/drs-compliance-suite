@@ -68,14 +68,17 @@
                         <tbody>
                             {% for case in test.cases %}
                                 <tr>
-                                <td class="normal">{{ case.case_description }}</td>
-                                {% if case.status == "PASS" %}
-                                    <td class="text-pass strong">{{ case.status }}</td>
-                                {% elif case.status == "FAIL" %}
-                                    <td class="text-fail strong">{{ case.status }}</td>
-                                {% else %}
-                                    <td class="text-warn strong">{{ case.status }}</td>
-                                {% endif %}
+                                    <td>
+                                        <details>
+                                            <summary class="normal">
+                                                {{ case.case_description }}
+                                            </summary>
+                                            <p class="normal {% if case.status == 'PASS' %}text-pass{% elif case.status == 'FAIL' %}text-fail{% else %}text-warn{% endif %}">
+                                                {{ case.message }}
+                                            </p>
+                                        </details>
+                                    </td>
+                                    <td class="{% if case.status == 'PASS' %}text-pass{% elif case.status == 'FAIL' %}text-fail{% else %}text-warn{% endif %} strong">{{ case.status }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -98,7 +101,7 @@ for (i = 0; i < coll.length; i++) {
     if (content.style.maxHeight){
       content.style.maxHeight = null;
     } else {
-      content.style.maxHeight = content.scrollHeight + "px";
+      content.style.maxHeight = "none";
     }
   });
 }
