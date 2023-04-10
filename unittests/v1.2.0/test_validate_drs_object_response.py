@@ -37,7 +37,7 @@ class TestValidateDRSObjectResponse(unittest.TestCase):
     def test_validate_has_access_info(self, mock_response, expected_status, expected_access_id_list, expected_message):
         self.validator.set_actual_response(mock_response)
         self.validator.set_case(self.mock_case)
-        actual_access_id_list = self.validator.validate_has_access_info()
+        actual_access_id_list = self.validator.validate_has_access_info(is_bundle=False)
         self.assertEqual(expected_status,self.validator.case.get_status())
         self.assertListEqual(expected_access_id_list, actual_access_id_list, "Actual access_id list doesn't match the expected list")
         self.assertEqual(self.validator.case.get_message(),expected_message)
