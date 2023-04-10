@@ -19,6 +19,7 @@ class TestReportRunner(unittest.TestCase):
         MockValidateDRSObjectResponse.return_value = mock_validate_drs_response
         skip_access_methods_test_cases = False
         skip_message=""
+        is_bundle = False
         access_id_list = add_access_methods_test_case(
             test_object,
             case_type,
@@ -26,7 +27,9 @@ class TestReportRunner(unittest.TestCase):
             endpoint_name,
             response,
             skip_access_methods_test_cases,
-            skip_message)
+            skip_message,
+            is_bundle
+        )
 
         # Assertions
         test_object.add_case.assert_called()
