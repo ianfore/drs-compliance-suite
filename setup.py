@@ -1,19 +1,19 @@
 import setuptools
 from supported_drs_versions import SUPPORTED_DRS_VERSIONS
 with open("README.md", "r") as fh:
-    description = fh.read()
+    long_description = fh.read()
 
 
 setuptools.setup(
     name="drs-compliance",
-    version="0.0.16",
+    version="1.0.0",
     author="Yash Puligundla",
     author_email="yasasvini.puligundla@ga4gh.org",
     packages=["compliance_suite"],
     package_data={'compliance_suite': ['config/*', 'schemas/*', 'schemas/v1.2.0/*']},
     description="A compliance utility reporting system for GA4GH DRS server implementations. "
                 "Supports GA4GH DRS versions - " + ",".join(SUPPORTED_DRS_VERSIONS),
-    long_description=description,
+    long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ga4gh/drs-compliance-suite",
     license='MIT',
