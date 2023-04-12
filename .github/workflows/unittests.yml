@@ -17,6 +17,7 @@ jobs:
     - run: pip install -r requirements.txt # download pip dependencies
 
     - name: Running Tests
+
       run: "pytest --cov=compliance_suite unittests/"
 
     # FOR FUTURE PR: CODE TEST COVERAGE

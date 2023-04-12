@@ -20,6 +20,7 @@ def report_runner(server_base_url, platform_name, platform_description, drs_vers
     """
     # Read input DRS objects from config folder
     # TODO: Add lower and upper limits to input DRS objects
+    
     config_service_info, input_drs_objects = get_config_json(config_file)
 
     # TODO: config json objects must contain auth_token and auth_type for service_info and for each of the drs_objects
