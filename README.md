@@ -39,7 +39,7 @@ export PYTHONPATH=<absolute path to drs-compliance-suite>
 python compliance_suite/report_runner.py --server_base_url "http://localhost:8085/ga4gh/drs/v1" --platform_name "ga4gh starter kit drs" --platform_description "GA4GH reference implementation of DRS specification" --drs_version "1.2.0" --config_file "compliance_suite/config/config_samples/config_basic.json" --serve --serve_port 56565
 ```
 ### Command Line Arguments
-#### <TODO: Add a table with default values, data type !!>
+
 #### Required:
 * **--server_base_url** : base url of the DRS implementation that is being tested by the compliance suite
 * **--platform_name** : name of the platform hosting the DRS server
@@ -52,6 +52,29 @@ python compliance_suite/report_runner.py --server_base_url "http://localhost:808
 
 
 Sample config files are provided in the `compliance_suite/config/config_samples` directory
+
+## Running the compliance suite via Docker
+
+### Pull the docker image from dockerhub
+```
+docker pull ga4gh/DRS-compliance-suite:{version}
+```
+{version} specifies the version of the docker image being pulled
+
+### Spinning up a docker container
+```
+docker run -d -p 15800:15800 --name DRS-compliance-suite ga4gh/DRS-compliance-suite --server https://www.ebi.ac.uk/ena/cram/ --port 15800 --serve
+```
+#### Arguments:
+- `--server` or `-s` (required). It is the url of the refget server being tested. At least one `--server` argument is required. Multiple can be provided.
+- `--serve` (optional) It's default value is False. If `--serve` flag is True then the compliance report will be served on the specified port.
+- `--port` (optional) It's default value is 15800. If `--port` is specified then this port has to be mapped and published on the docker container by changing the -p option of the docker run command. For example, if `--port 8080` is specified, then docker run command will be
+```bash
+docker run -d -p 8080:8080 --name refget-compliance-suite ga4gh/refget-compliance-suite --server https://www.ebi.ac.uk/ena/cram/ --port 8080 --serve
+```
+- `--json` or `--json_path` (optional) If this argument is '-' then the output json is flushed to standard output. If a valid path is provided then the output is written as a json file at the specified location.
+- `--file_path_name` or `-fpn` (optional) It's default value is "web". This argument is required to create a ".tar.gz" format of the output json with the specified name.
+- `--no-web` (optional) If `--no-web` flag is True then the ".tar.gz" output file creation will be skipped.
 
 ## Running the good mock server that follows DRS v1.2.0 specification on port 8085
 ```
