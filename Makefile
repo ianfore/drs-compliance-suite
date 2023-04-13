@@ -15,10 +15,11 @@ docker-publish:
 
 .PHONY: run-docker
 run-docker:
-	docker run -v $(PWD)/output/:/usr/src/app/output/ ga4gh/drs-compliance-suite:${DOCKER_TAG} \
+	docker run -d -v $(PWD)/output/:/usr/src/app/output/ -p 57568:57568 \
+	ga4gh/drs-compliance-suite:${DOCKER_TAG} \
 	--server_base_url "http://host.docker.internal:8089/ga4gh/drs/v1" \
 	--platform_name "ga4gh starter kit drs" --platform_description "GA4GH reference implementation of DRS specification" \
-	--auth_type "none" --report_path "./output/test-report.json"
+	--drs_version "1.2.0" --config_file "compliance_suite/config/config_samples/config_none.json" --serve --serve_port 57568
 
 .PHONY: run-dockstore-wdl
 run-dockstore-wdl:
@@ -32,4 +33,3 @@ run-cwltool-cwl:
 .PHONY: run-dockstore-cwl
 run-dockstore-cwl:
 	dockstore tool launch --local-entry tools/cwl/drs_compliance_suite.cwl --json tools/cwl/drs_compliance_suite.cwl.json --script
-
