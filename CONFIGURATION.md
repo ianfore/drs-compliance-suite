@@ -50,8 +50,11 @@ Example config file:
 ### Auth types
 
 'none': Requires nothing
+
 'basic': Requires "auth_token" containing username and password
+
 'bearer': Requires "auth_token" containing bearer token
+
 'passport': Requires POST request with "passports" in the body 
 
 As you can see from the example config, different DRS objects may have different requirements of auth type to access. 
