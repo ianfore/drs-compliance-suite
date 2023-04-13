@@ -12,5 +12,5 @@ def index():
     return render_template("index.html", report=report)
 
 def start_mock_server(port):
-    # serves the output report as html webpage at http://127.0.0.1:<port>/
-    app.run(port=port,debug=True)
+    # serves the output report as html webpage at http://0.0.0.0:<port>/
+    app.run(host="0.0.0.0",port=port,debug=True)
