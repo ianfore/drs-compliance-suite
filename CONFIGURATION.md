@@ -67,21 +67,4 @@ DRS bundles are part of the DRS 1.2.0 spec. Bundle objects are DRS objects that 
 
 In the config, a DRS object can be specified to be a bundle by setting the "is_bundle" value to "true"
 
-## serviceInfo
-
-`serviceInfo` supports the following configurable attributes:
-
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| id | unique identifier for the service in reverse domain name formant | org.ga4gh.starterkit.drs |
-| name | short, human readable service name | GA4GH Starter Kit DRS Service |
-| description | longer, human readable description | An open source community-driven implementation of the GA4GH Data Repository Service (DRS) API specification. |
-| contactUrl | URL/email address users should contact with questions or issues about the service | mailto:info@ga4gh.org |
-| documentationUrl | URL to where documentation about the service is hosted | https://github.com/ga4gh/ga4gh-starter-kit-drs |
-| createdAt | timestamp of when the service was first started | 2020-01-15T12:00:00Z |
-| updatedAt | timestamp of when the service was last updated | 2020-01-15T12:00:00Z |
-| environment | describes what environment the service is running in (e.g. dev, test, prod) | test |
-| version | the service version | 0.1.0 |
-| organization.name | name of the organization hosting the service | Global Alliance for Genomics and Health |
-| organization.url | URL to organization homepage | https://ga4gh.org |
 
