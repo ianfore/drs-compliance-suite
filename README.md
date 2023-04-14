@@ -4,21 +4,8 @@ This compliance suite currently supports the following DRS versions and will aim
 * DRS 1.2.0
 
 ## Installations
-Python 3.x is required to run DRS Compliance Suite. We recomment using a virtual environment to run the compliance suite.
-
-Install Python virtualenv package and create a new Python virtual environment
-```
-pip3 install virtualenv
-python3 -m virtualenv drs_venv
-```
-To activate the virtual environment
-```
-source <path_to_virtual_env>/bin/activate
-```
-To deactivate or exit the virtual environment
-```
-deactivate
-```
+- [Python 3.x](https://www.python.org/downloads/) is required to run DRS Compliance Suite natively or using PyPI package.
+- [Docker Desktop](https://docs.docker.com/get-docker/) is required to run DRS Compliance Suite using a docker image.
 ## Running DRS Compliance Suite
 ### 1. Natively
 
@@ -82,7 +69,7 @@ Please refer to the [Command Line Arguments](#command-line-arguments) section fo
 | --serve | If this flag is set to True, the output report is served as an HTML webpage at the port specified by `--serve_port`. | Optional | False |
 | --serve-port | The port where the output report HTML is deployed. | Optional | 57568 |
 
-#### Config File
+#### Config File:
 
 The compliance suite is provided with information for testing the DRS server through a user-provided JSON config file. This file includes the following details:
 - Authorization information for the service-info endpoint
