@@ -38,18 +38,6 @@ export PYTHONPATH=<absolute path to drs-compliance-suite>
 ``` 
 python compliance_suite/report_runner.py --server_base_url "http://localhost:8085/ga4gh/drs/v1" --platform_name "ga4gh starter kit drs" --platform_description "GA4GH reference implementation of DRS specification" --drs_version "1.2.0" --config_file "compliance_suite/config/config_samples/config_basic.json" --serve --serve_port 56565
 ```
-### Command Line Arguments
-
-#### Required:
-* **--server_base_url** : base url of the DRS implementation that is being tested by the compliance suite
-* **--platform_name** : name of the platform hosting the DRS server
-* **--platform_description** : description of the platform hosting the DRS server
-* **--drs_version** : version of DRS implemented by the DRS server. It can be one of the following -
-  * "1.2.0"
-* **--serve** : If this flag is set, the output report is served as an html webpage.
-* **--serve_port** : The port where the output report html is deployed when serve option is used. Default value = 57568 
-* **--config_file** : The File path of JSON config file. The config file must contain auth information for service-info endpoint and different DRS objects
-
 
 Sample config files are provided in the `compliance_suite/config/config_samples` directory
 
@@ -57,21 +45,31 @@ Sample config files are provided in the `compliance_suite/config/config_samples`
 
 ### Pull the docker image from dockerhub
 ```
-docker pull ga4gh/DRS-compliance-suite:{version}
+docker pull ga4gh/drs-compliance-suite:{version}
 ```
-{version} specifies the version of the docker image being pulled
+{version} specifies the version of the docker image being pulled. Latest is 1.0.0.
 
 ### Spinning up a docker container
 ```
-docker run -d -p 15800:15800 --name DRS-compliance-suite ga4gh/DRS-compliance-suite --server https://www.ebi.ac.uk/ena/cram/ --port 15800 --serve
+docker run -d -v $(PWD)/output/:/usr/src/app/output/ -p 57568:57568 ga4gh/drs-compliance-suite:$ /{DOCKER_TAG} --server_base_url "http://host.docker.internal:8089/ga4gh/drs/v1" --platform_name "ga4gh starter kit drs" --platform_description "GA4GH reference implementation of DRS specification" --auth_type "none" --report_path "./output/test-report.json" --drs_version "1.2.0" --config_file "compliance_suite/config/config_samples/config_none.json" --serve --serve_port 57568
 ```
-#### Arguments:
-- `--server` or `-s` (required). It is the url of the refget server being tested. At least one `--server` argument is required. Multiple can be provided.
+
+## Install from pipy
+Install using pip 
+```
+pip install drs-compliance~=1.0.0
+```
+
+### Command Line Arguments
+- `--server_base_url` (required) base url of the DRS implementation that is being tested by the compliance suite
+- `--config_file` (required) Set path for config file 
+- `--platform_name` (optional) Set name of the platform hosting the DRS server
+- `--platform_description` (optional) Set description of the platform hosting the DRS server
+- `--auth_type` (optional) Set the auth type that is to be tested for the DRS server
+- `--report_path` (optional) Set path for the report output
+- `--drs_version` (optional) The compliance suite currently supports DRS versions 1.2.0 and 1.3.0
 - `--serve` (optional) It's default value is False. If `--serve` flag is True then the compliance report will be served on the specified port.
-- `--port` (optional) It's default value is 15800. If `--port` is specified then this port has to be mapped and published on the docker container by changing the -p option of the docker run command. For example, if `--port 8080` is specified, then docker run command will be
-```bash
-docker run -d -p 8080:8080 --name refget-compliance-suite ga4gh/refget-compliance-suite --server https://www.ebi.ac.uk/ena/cram/ --port 8080 --serve
-```
+- `--serve-port` (optional) It's default value is 15800. If `--port` is specified then this port has to be mapped and published on the docker container by changing the -p option of the docker run command. For example, if `--port 8080` is specified, then docker run command will be `8080:8080`
 - `--json` or `--json_path` (optional) If this argument is '-' then the output json is flushed to standard output. If a valid path is provided then the output is written as a json file at the specified location.
 - `--file_path_name` or `-fpn` (optional) It's default value is "web". This argument is required to create a ".tar.gz" format of the output json with the specified name.
 - `--no-web` (optional) If `--no-web` flag is True then the ".tar.gz" output file creation will be skipped.
