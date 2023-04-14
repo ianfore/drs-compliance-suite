@@ -6,7 +6,7 @@ This document outlines how to configure the DRS service.
 
 ## Overview
 
-The DRS compliance suite uses a user created config file which provides the compliance suite with information on how to test the DRS implementation.
+The DRS compliance suite uses a user created config file which provides the compliance suite with information to use for testing the DRS server. This config file contains the auth info needed for service info and a list of DRS objects for the compliance suite to use to test with.
 
 ## Config file
 
@@ -15,49 +15,58 @@ Prepare your config file with the service info such as auth_type as well as a fe
 Example config file:
 ```
 {
- "service_info": {
-   "auth_type": "basic",
-   "auth_token": "dXNlcm5hbWU6cGFzc3dvcmQ="
- },
- "drs_objects" : [
-   {
-     "drs_id": "697907bf-d5bd-433e-aac2-1747f1faf366",
-     "auth_type": "none",
-     "auth_token": "",
-     "is_bundle": false
-   },
-   {
-     "drs_id": "0bb9d297-2710-48f6-ab4d-80d5eb0c9eaa",
-     "auth_type": "basic",
-     "auth_token": "dXNlcm5hbWU6cGFzc3dvcmQ=",
-     "is_bundle": false
-   },
-   {
-      "drs_id" : "41898242-62a9-4129-9a2c-5a4e8f5f0afb",
-      "auth_type": "bearer",
-      "auth_token": "secret-bearer-token-1",
-      "is_bundle": true
-   },
-   {
-      "drs_id" : "a1dd4ae2-8d26-43b0-a199-342b64c7dff6",
-      "auth_type": "passport",
-      "auth_token": "43b-passport-a1d",
-      "is_bundle": true
-   }
- ]
+  "service_info": {
+      "auth_type": "basic",
+      "auth_token": "dXNlcm5hbWU6cGFzc3dvcmQ="
+  },
+  "drs_objects" : [
+      {
+          "drs_id": "697907bf-d5bd-433e-aac2-1747f1faf366",
+          "auth_type": "none",
+          "auth_token": "",
+          "is_bundle": false
+      },
+      {
+          "drs_id": "0bb9d297-2710-48f6-ab4d-80d5eb0c9eaa",
+          "auth_type": "basic",
+          "auth_token": "dXNlcm5hbWU6cGFzc3dvcmQ=",
+          "is_bundle": false
+      },
+      {
+          "drs_id" : "41898242-62a9-4129-9a2c-5a4e8f5f0afb",
+          "auth_type": "bearer",
+          "auth_token": "secret-bearer-token-1",
+          "is_bundle": true
+      },
+      {
+          "drs_id" : "a1dd4ae2-8d26-43b0-a199-342b64c7dff6",
+          "auth_type": "passport",
+          "auth_token": "43b-passport-a1d",
+          "is_bundle": true
+      }
+  ]
 }
 ```
 ### Auth types
 
-'none': Requires nothing
+`none`: Object does not require auth to access. "auth_token" can be set as an empty string
 
-'basic': Requires "auth_token" containing username and password
+`basic`: Object requires "auth_token" that is created using base64 encoding
 
-'bearer': Requires "auth_token" containing bearer token
+`bearer`: Object requires "auth_token" containing bearer token
 
-'passport': Requires POST request with "passports" in the body 
+`passport`: Object requires "auth_token" containing a GA4GH passport
 
-As you can see from the example config, different DRS objects may have different requirements of auth type to access. 
+
+### DRS Objects
+
+`drs_id`: Add the DRS id of the object being tested 
+
+`auth_type`: Specify the auth type for accessing the object
+
+`auth_token`: Supply the auth token for accessing the object
+
+`is_bundle`: Indicate if the object is a bundle with "true" or "false" 
 
 ### DRS bundles and blobs
 
