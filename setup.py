@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(
-    name="drs-compliance",
+    name="drs-compliance-suite",
     version="1.0.2",
     author="Yash Puligundla",
     author_email="yasasvini.puligundla@ga4gh.org",
@@ -28,7 +28,7 @@ setuptools.setup(
                       'ga4gh-testbed-lib==0.2.0'],
     entry_points='''
         [console_scripts]
-        drs-compliance=compliance_suite.report_runner:main
+        drs-compliance-suite=compliance_suite.report_runner:main
     '''
 
 )
