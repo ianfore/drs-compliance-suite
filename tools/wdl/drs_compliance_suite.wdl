@@ -12,7 +12,7 @@ task createDrsComplianceReport{
     }
 
     command {
-        drs-compliance --server_base_url ${server_base_url} --platform_name "${platform_name}" --platform_description "${platform_description}" --auth_type "${auth_type}" --report_path "${report_path}"
+        drs-compliance-suite --server_base_url ${server_base_url} --platform_name "${platform_name}" --platform_description "${platform_description}" --auth_type "${auth_type}" --report_path "${report_path}"
     }
 
     output {
