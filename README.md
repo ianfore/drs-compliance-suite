@@ -46,11 +46,11 @@ Please refer to the [Command Line Arguments](#command-line-arguments) section fo
 
 Pull the latest docker image from dockerhub. 
 ```
-docker pull ga4gh/drs-compliance-suite:1.0.2
+docker pull ga4gh/drs-compliance-suite:1.0.3
 ```
 Run the compliance suite using the docker image
 ```
-docker run -d --name drs-compliance-suite -v $(PWD)/output/:/usr/src/app/output/ -p 57568:57568 ga4gh/drs-compliance-suite:1.0.2 --server_base_url "http://host.docker.internal:8085/ga4gh/drs/v1" --platform_name "ga4gh starter kit drs" --platform_description "GA4GH reference implementation of DRS specification" --report_path "./output/test-report.json" --drs_version "1.2.0" --config_file "compliance_suite/config/config_samples/config_none.json" --serve --serve_port 57568
+docker run -d --name drs-compliance-suite -v $(PWD)/output/:/usr/src/app/output/ -p 57568:57568 ga4gh/drs-compliance-suite:1.0.3: --server_base_url "http://host.docker.internal:8085/ga4gh/drs/v1" --platform_name "ga4gh starter kit drs" --platform_description "GA4GH reference implementation of DRS specification" --report_path "./output/test-report.json" --drs_version "1.2.0" --config_file "compliance_suite/config/config_samples/config_none.json" --serve --serve_port 57568
 ```
 Note: This specific command is an example of running the compliance suite on a local deployment of DRS that is running on port 8085. \
 When running the compliance suite, it's important to configure the command line arguments according to the specific DRS implementation you're testing.
@@ -127,6 +127,11 @@ pytest --cov=compliance_suite unittests/
 ```
 
 ## Changelog
+
+### v1.0.3
+* provide flexibility in providing different auth information for drs object and drs access endpoints
+* remove incorrect skip status setting
+
 ### v1.0.2
 * Reduce the docker image size by using python:3.11-slim-bullseye instead of python:3
 
